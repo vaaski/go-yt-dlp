@@ -22,8 +22,8 @@ var PRESET_MAP = map[string][]string{
 }
 
 func validateUrl(inputUrl string) bool {
-	_, err := url.ParseRequestURI(inputUrl)
-	return err == nil
+	parsed, err := url.ParseRequestURI(inputUrl)
+	return err == nil && parsed.Scheme != "" && parsed.Host != ""
 }
 
 func getClipboardUrl() string {
@@ -61,18 +61,18 @@ func main() {
 	cpuCount := runtime.NumCPU()
 	dynamicArgs = append(dynamicArgs, "-N", fmt.Sprint(cpuCount))
 
-	println("Input url:", inputUrl)
+	// println("Input url:", inputUrl)
 
 	infoArgs := append(DEFAULT_ARGS[:], "-J")
 	infoArgs = append(infoArgs, dynamicArgs...)
 	infoArgs = append(infoArgs, inputUrl)
 
-	println("finalArgs:", strings.Join(infoArgs, " "))
+	// println("finalArgs:", strings.Join(infoArgs, " "))
 	infoCmd := exec.Command("yt-dlp", infoArgs...)
-	infoOut, err := infoCmd.Output()
-	maybePanic(err)
+	infoOut, infoErr := infoCmd.Output()
+	maybePanic(infoErr)
 
-	os.WriteFile("info.json", infoOut, 0644)
+	// os.WriteFile("info.json", infoOut, 0644)
 
 	title, titleErr := jsonparser.GetString(infoOut, "entries", "[0]", "title")
 	if titleErr != nil {
@@ -92,12 +92,24 @@ func main() {
 		i++
 	}
 
-	presetPicker := selection.New("Select preset", presets)
+	presetPicker := selection.New("preset", presets)
 	presetPicker.Filter = nil
 	preset, presetErr := presetPicker.RunPrompt()
 	if presetErr != nil {
 		os.Exit(0)
 	}
 
-	println("Selected preset:", strings.Join(PRESET_MAP[preset], " "))
+	// println("selected preset:", strings.Join(PRESET_MAP[preset], " "))
+
+	downloadArgs := append(DEFAULT_ARGS[:], PRESET_MAP[preset]...)
+	downloadArgs = append(downloadArgs, dynamicArgs...)
+	downloadArgs = append(downloadArgs, "--load-info-json", "-")
+
+	println("finalArgs:", strings.Join(downloadArgs, " "))
+
+	downloadCmd := exec.Command("yt-dlp", downloadArgs...)
+	downloadCmd.Stdin = strings.NewReader(string(infoOut))
+	downloadCmd.Stdout = os.Stdout
+	downloadErr := downloadCmd.Run()
+	maybePanic(downloadErr)
 }
