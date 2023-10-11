@@ -7,6 +7,9 @@ import (
 	"runtime"
 	"strings"
 
+	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
+
 	"github.com/buger/jsonparser"
 	"github.com/erikgeiser/promptkit/selection"
 	"github.com/erikgeiser/promptkit/textinput"
@@ -32,12 +35,9 @@ func main() {
 		os.Exit(0)
 	}
 
-	presets := make([]string, len(PRESET_MAP))
-	i := 0
-	for k := range PRESET_MAP {
-		presets[i] = k
-		i++
-	}
+	presets := maps.Keys(PRESET_MAP)
+	slices.Sort(presets)
+	slices.Reverse(presets)
 
 	presetPicker := selection.New("preset:", presets)
 	presetPicker.Filter = nil
