@@ -22,6 +22,8 @@ var PRESET_MAP = map[string][]string{
 	"mp3":      {"-x", "--audio-format", "mp3", "-o", "%(uploader)s - %(title)s.%(ext)s"},
 }
 
+// todo resolve title while selecting format
+// todo take url as arg
 func main() {
 	dynamicArgs := []string{}
 
