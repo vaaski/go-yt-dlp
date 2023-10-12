@@ -22,19 +22,26 @@ var PRESET_MAP = map[string][]string{
 	"mp3":      {"-x", "--audio-format", "mp3", "-o", "%(uploader)s - %(title)s.%(ext)s"},
 }
 
-// todo resolve title while selecting format
 // todo take url as arg
+// todo resolve title while selecting format
+// todo try to use faster youtube downloading techniques (https://github.com/yt-dlp/yt-dlp/pull/860#issuecomment-911141453)
 func main() {
+	argQuery := os.Args[1:]
 	dynamicArgs := []string{}
 
-	println("enter a query, either a", formatBold("url"), "or something to", formatBold("search on youtube"))
+	var url string
+	if len(argQuery) > 0 {
+		url = strings.Join(argQuery, " ")
+	} else {
+		println("enter a query, either a", formatBold("url"), "or something to", formatBold("search on youtube"))
+		inputPrompt := textinput.New("query:")
+		inputPrompt.InitialValue = getClipboardUrl()
 
-	inputPrompt := textinput.New("query:")
-	inputPrompt.InitialValue = getClipboardUrl()
-
-	url, inputErr := inputPrompt.RunPrompt()
-	if inputErr != nil {
-		os.Exit(0)
+		var inputErr error
+		url, inputErr = inputPrompt.RunPrompt()
+		if inputErr != nil {
+			os.Exit(0)
+		}
 	}
 
 	presets := maps.Keys(PRESET_MAP)
