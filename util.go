@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/url"
+	"os"
 
 	"github.com/muesli/termenv"
 	"golang.design/x/clipboard"
@@ -39,4 +40,12 @@ func getClipboardUrl() string {
 	} else {
 		return ""
 	}
+}
+
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
 }

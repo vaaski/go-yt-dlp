@@ -1,5 +1,6 @@
 ytdl-download
 *.json
 go-yt-dlp
+yt-dlp
 .DS_Store
 dist

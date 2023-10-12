@@ -15,6 +15,7 @@ import (
 	"github.com/erikgeiser/promptkit/textinput"
 )
 
+var ytDlpPath string = "yt-dlp"
 var DEFAULT_ARGS = [...]string{"--force-keyframes-at-cuts", "-P", "ytdl-download", "--embed-metadata", "--no-playlist", "--console-title"}
 var PRESET_MAP = map[string][]string{
 	"mp4":      {"--remux-video", "mp4"},
@@ -28,6 +29,13 @@ func main() {
 	argQuery := os.Args[1:]
 	dynamicArgs := []string{}
 	infoChannel := make(chan []byte)
+
+	if fileExists("./yt-dlp") {
+		ytDlpPath = "./yt-dlp"
+	} else if fileExists("./yt-dlp.exe") {
+		// todo test on windows
+		ytDlpPath = "./yt-dlp.exe"
+	}
 
 	var url string
 	if len(argQuery) > 0 {
@@ -72,7 +80,7 @@ func main() {
 	downloadArgs = append(downloadArgs, dynamicArgs...)
 	downloadArgs = append(downloadArgs, "--load-info-json", "-")
 
-	downloadCmd := exec.Command("yt-dlp", downloadArgs...)
+	downloadCmd := exec.Command(ytDlpPath, downloadArgs...)
 	downloadCmd.Stdin = strings.NewReader(string(infoOut))
 	downloadCmd.Stdout = os.Stdout
 	downloadCmd.Stderr = os.Stderr
@@ -85,7 +93,7 @@ func resolveInfo(dynamicArgs []string, inputUrl string, ch chan []byte) {
 	infoArgs = append(infoArgs, dynamicArgs...)
 	infoArgs = append(infoArgs, inputUrl)
 
-	infoCmd := exec.Command("yt-dlp", infoArgs...)
+	infoCmd := exec.Command(ytDlpPath, infoArgs...)
 	infoOut, infoErr := infoCmd.Output()
 	maybePanic(infoErr)
 
