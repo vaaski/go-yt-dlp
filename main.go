@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"runtime"
 	"strings"
 
@@ -16,7 +17,8 @@ import (
 )
 
 var ytDlpPath string = "yt-dlp"
-var DEFAULT_ARGS = [...]string{"--force-keyframes-at-cuts", "-P", "ytdl-download", "--embed-metadata", "--no-playlist", "--console-title"}
+var downloadPath string = "ytdl-download"
+var DEFAULT_ARGS = [...]string{"--force-keyframes-at-cuts", "--embed-metadata", "--no-playlist", "--console-title"}
 var PRESET_MAP = map[string][]string{
 	"mp4":      {"--remux-video", "mp4"},
 	"mp4-fast": {"-f", "b"},
@@ -29,6 +31,15 @@ func main() {
 	argQuery := os.Args[1:]
 	dynamicArgs := []string{}
 	infoChannel := make(chan []byte)
+
+	executablePath, _ := os.Executable()
+	executableFolder := path.Join(executablePath, "..")
+	if strings.HasPrefix(executableFolder, "/var/folders") {
+		cwd, _ := os.Getwd()
+		downloadPath = path.Join(cwd, downloadPath)
+	} else {
+		downloadPath = path.Join(executableFolder, downloadPath)
+	}
 
 	if fileExists("./yt-dlp") {
 		ytDlpPath = "./yt-dlp"
@@ -78,6 +89,7 @@ func main() {
 
 	downloadArgs := append(DEFAULT_ARGS[:], PRESET_MAP[preset]...)
 	downloadArgs = append(downloadArgs, dynamicArgs...)
+	downloadArgs = append(downloadArgs, "-P", downloadPath)
 	downloadArgs = append(downloadArgs, "--load-info-json", "-")
 
 	downloadCmd := exec.Command(ytDlpPath, downloadArgs...)
