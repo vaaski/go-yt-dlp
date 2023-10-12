@@ -22,12 +22,11 @@ var PRESET_MAP = map[string][]string{
 	"mp3":      {"-x", "--audio-format", "mp3", "-o", "%(uploader)s - %(title)s.%(ext)s"},
 }
 
-// todo take url as arg
-// todo resolve title while selecting format
 // todo try to use faster youtube downloading techniques (https://github.com/yt-dlp/yt-dlp/pull/860#issuecomment-911141453)
 func main() {
 	argQuery := os.Args[1:]
 	dynamicArgs := []string{}
+	infoChannel := make(chan []byte)
 
 	var url string
 	if len(argQuery) > 0 {
@@ -44,6 +43,14 @@ func main() {
 		}
 	}
 
+	inputUrl := url
+	if !validateUrl(url) {
+		inputUrl = "https://youtube.com/search?q=" + url
+		dynamicArgs = append(dynamicArgs, "-I", "1")
+	}
+
+	go resolveInfo(dynamicArgs, inputUrl, infoChannel)
+
 	presets := maps.Keys(PRESET_MAP)
 	slices.Sort(presets)
 	slices.Reverse(presets)
@@ -55,15 +62,23 @@ func main() {
 		os.Exit(0)
 	}
 
-	inputUrl := url
-	if !validateUrl(url) {
-		inputUrl = "https://youtube.com/search?q=" + url
-		dynamicArgs = append(dynamicArgs, "-I", "1")
-	}
-
 	cpuCount := runtime.NumCPU()
 	dynamicArgs = append(dynamicArgs, "-N", fmt.Sprint(cpuCount))
 
+	infoOut := <-infoChannel
+
+	downloadArgs := append(DEFAULT_ARGS[:], PRESET_MAP[preset]...)
+	downloadArgs = append(downloadArgs, dynamicArgs...)
+	downloadArgs = append(downloadArgs, "--load-info-json", "-")
+
+	downloadCmd := exec.Command("yt-dlp", downloadArgs...)
+	downloadCmd.Stdin = strings.NewReader(string(infoOut))
+	downloadCmd.Stdout = os.Stdout
+	downloadErr := downloadCmd.Run()
+	maybePanic(downloadErr)
+}
+
+func resolveInfo(dynamicArgs []string, inputUrl string, ch chan []byte) {
 	infoArgs := append(DEFAULT_ARGS[:], "-J")
 	infoArgs = append(infoArgs, dynamicArgs...)
 	infoArgs = append(infoArgs, inputUrl)
@@ -78,20 +93,12 @@ func main() {
 		infoOut = firstEntry
 	}
 
-	title, titleErr := jsonparser.GetString(infoOut, "title")
-	if titleErr != nil {
-		title = "error extracting title"
-	}
+	// title, titleErr := jsonparser.GetString(infoOut, "title")
+	// if titleErr != nil {
+	// 	title = "error extracting title"
+	// }
 
-	println("title:", formatColor(title))
+	// println("title:", formatColor(title))
 
-	downloadArgs := append(DEFAULT_ARGS[:], PRESET_MAP[preset]...)
-	downloadArgs = append(downloadArgs, dynamicArgs...)
-	downloadArgs = append(downloadArgs, "--load-info-json", "-")
-
-	downloadCmd := exec.Command("yt-dlp", downloadArgs...)
-	downloadCmd.Stdin = strings.NewReader(string(infoOut))
-	downloadCmd.Stdout = os.Stdout
-	downloadErr := downloadCmd.Run()
-	maybePanic(downloadErr)
+	ch <- infoOut
 }
