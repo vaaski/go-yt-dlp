@@ -1,10 +1,15 @@
 <div align="center">
+<h1>go-yt-dlp</h1>
 
-[![YT-DLP](https://raw.githubusercontent.com/vaaski/go-yt-dlp/.github/yt-dlp-gopher.svg)](#readme)
+<br />
+
+<img alt="go-yt-dlp" width="300" src="https://raw.githubusercontent.com/vaaski/go-yt-dlp/main/.github/yt-dlp-gopher.svg" />
 
 </div>
 
-go-yt-dlp is a small wrapper around the excellent [yt-dlp project][yt-dlp].
+<br />
+
+> go-yt-dlp is a small wrapper around the excellent [yt-dlp project][yt-dlp].
 It provides a simple interface to download videos from YouTube and a
 [few other sites][othersites].
 
