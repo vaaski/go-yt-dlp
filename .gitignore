@@ -1,3 +1,4 @@
 ytdl-download
 *.json
 go-yt-dlp
+.DS_Store
