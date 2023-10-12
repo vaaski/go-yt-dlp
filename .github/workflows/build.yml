@@ -1,0 +1,44 @@
+name: build
+
+on: [push]
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.21
+
+      - name: Build
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean --snapshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload darwin arm64
+        uses: actions/upload-artifact@v3
+        with:
+          name: go-yt-dlp darwin arm64
+          path: dist/go-yt-dlp_darwin_arm64/go-yt-dlp
+
+      - name: Upload darwin amd64
+        uses: actions/upload-artifact@v3
+        with:
+          name: go-yt-dlp darwin amd64
+          path: dist/go-yt-dlp_darwin_amd64_v1/go-yt-dlp
+
+      - name: Upload windows amd64
+        uses: actions/upload-artifact@v3
+        with:
+          name: go-yt-dlp windows amd64
+          path: dist/go-yt-dlp_windows_amd64_v1/go-yt-dlp.exe
