@@ -22,7 +22,8 @@ var PRESET_MAP = map[string][]string{
 	"mp3":      {"-x", "--audio-format", "mp3", "-o", "%(uploader)s - %(title)s.%(ext)s"},
 }
 
-// todo try to use faster youtube downloading techniques (https://github.com/yt-dlp/yt-dlp/pull/860#issuecomment-911141453)
+// todo music search
+// todo format flags
 func main() {
 	argQuery := os.Args[1:]
 	dynamicArgs := []string{}
@@ -74,6 +75,7 @@ func main() {
 	downloadCmd := exec.Command("yt-dlp", downloadArgs...)
 	downloadCmd.Stdin = strings.NewReader(string(infoOut))
 	downloadCmd.Stdout = os.Stdout
+	downloadCmd.Stderr = os.Stderr
 	downloadErr := downloadCmd.Run()
 	maybePanic(downloadErr)
 }
