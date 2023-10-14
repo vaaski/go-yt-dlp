@@ -27,6 +27,7 @@ var PRESET_MAP = map[string][]string{
 
 // todo music search
 // todo format flags
+// todo record ascii cinema for readme
 func main() {
 	argQuery := os.Args[1:]
 	dynamicArgs := []string{}
