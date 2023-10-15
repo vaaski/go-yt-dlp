@@ -12,6 +12,7 @@ import (
 	"golang.org/x/exp/slices"
 
 	"github.com/buger/jsonparser"
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/erikgeiser/promptkit/selection"
 	"github.com/erikgeiser/promptkit/textinput"
 )
@@ -29,6 +30,13 @@ var PRESET_MAP = map[string][]string{
 // todo format flags
 // todo record ascii cinema for readme
 func main() {
+	_, err := tea.NewProgram(initialModel()).Run()
+	if err != nil {
+		fmt.Printf("Could not start program :(\n%v\n", err)
+		os.Exit(1)
+	}
+
+	return
 	argQuery := os.Args[1:]
 	dynamicArgs := []string{}
 	infoChannel := make(chan []byte)
@@ -36,6 +44,8 @@ func main() {
 	executablePath, _ := os.Executable()
 	executableFolder := path.Join(executablePath, "..")
 	if strings.HasPrefix(executableFolder, "/var/folders") {
+		// the path for the executable is in some temp folder when using `go run .`
+		// so we use the current working directory instead
 		cwd, _ := os.Getwd()
 		downloadPath = path.Join(cwd, downloadPath)
 	} else {
