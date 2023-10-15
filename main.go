@@ -30,9 +30,16 @@ var PRESET_MAP = map[string][]string{
 // todo format flags
 // todo record ascii cinema for readme
 func main() {
-	_, err := tea.NewProgram(initialModel()).Run()
-	if err != nil {
-		fmt.Printf("Could not start program :(\n%v\n", err)
+	f, logErr := tea.LogToFile("debug.log", "debug")
+	if logErr != nil {
+		fmt.Println("fatal:", logErr)
+		os.Exit(1)
+	}
+	defer f.Close()
+
+	_, teaErr := tea.NewProgram(initialModel()).Run()
+	if teaErr != nil {
+		fmt.Printf("Could not start program :(\n%v\n", teaErr)
 		os.Exit(1)
 	}
 

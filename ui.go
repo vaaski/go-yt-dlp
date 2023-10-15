@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"runtime"
@@ -37,7 +39,10 @@ type model struct {
 	downloadQuery string
 	quitting      bool
 
-	infoOut []byte
+	infoOut            []byte
+	downloadLogs       []string
+	downloadLogChannel chan string
+	downloadDone       bool
 
 	presetCursor   int
 	selectedPreset string
@@ -71,9 +76,11 @@ func fetchInfo(url string) tea.Cmd {
 	}
 }
 
-func startDownload(infoOut []byte, preset string) tea.Cmd {
+type downloadFinishMsg bool
+
+func startDownload(m model) tea.Cmd {
 	return func() tea.Msg {
-		downloadArgs := append(DEFAULT_ARGS[:], PRESET_MAP[preset]...)
+		downloadArgs := append(DEFAULT_ARGS[:], PRESET_MAP[m.selectedPreset]...)
 		downloadArgs = append(downloadArgs, "-P", downloadPath)
 
 		cpuCount := runtime.NumCPU()
@@ -81,13 +88,31 @@ func startDownload(infoOut []byte, preset string) tea.Cmd {
 		downloadArgs = append(downloadArgs, "--load-info-json", "-")
 
 		downloadCmd := exec.Command(ytDlpPath, downloadArgs...)
-		downloadCmd.Stdin = strings.NewReader(string(infoOut))
-		downloadCmd.Stdout = os.Stdout
-		downloadCmd.Stderr = os.Stderr
-
-		downloadErr := downloadCmd.Run()
+		downloadCmd.Stdin = strings.NewReader(string(m.infoOut))
+		stdout, downloadErr := downloadCmd.StdoutPipe()
 		maybePanic(downloadErr)
-		return nil
+
+		downloadErr = downloadCmd.Start()
+		maybePanic(downloadErr)
+
+		scanner := bufio.NewScanner(stdout)
+		for scanner.Scan() {
+			m.downloadLogChannel <- scanner.Text()
+		}
+		close(m.downloadLogChannel)
+
+		downloadErr = downloadCmd.Wait()
+		maybePanic(downloadErr)
+
+		return downloadFinishMsg(true)
+	}
+}
+
+type downloadLogMsg string
+
+func waitForDownloadLog(downloadChannel chan string) tea.Cmd {
+	return func() tea.Msg {
+		return downloadLogMsg(<-downloadChannel)
 	}
 }
 
@@ -112,9 +137,10 @@ func initialModel() model {
 	ti.Width = 44 // length of a full youtube url
 
 	return model{
-		view:      QuerySelect,
-		presets:   presets,
-		textInput: ti,
+		view:               QuerySelect,
+		presets:            presets,
+		textInput:          ti,
+		downloadLogChannel: make(chan string),
 	}
 }
 
@@ -137,8 +163,26 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.infoOut = msg
 		m.title = getTitle(msg)
 		if m.selectedPreset != "" && m.view == DownloadView {
-			return m, startDownload(msg, m.selectedPreset)
+			return m, tea.Batch(startDownload(m), waitForDownloadLog(m.downloadLogChannel))
 		}
+	case downloadLogMsg:
+		if strings.TrimSpace(string(msg)) != "" {
+			f, logErr := tea.LogToFile("debug.log", "download")
+			if logErr != nil {
+				fmt.Println("fatal:", logErr)
+				os.Exit(1)
+			}
+			defer f.Close()
+
+			log.Println(msg, fmt.Sprint(m.downloadDone))
+			m.downloadLogs = append(m.downloadLogs, string(msg))
+		}
+
+		if !m.downloadDone {
+			return m, waitForDownloadLog(m.downloadLogChannel)
+		}
+	case downloadFinishMsg:
+		m.downloadDone = true
 	}
 
 	if m.view == QuerySelect {
@@ -180,7 +224,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.selectedPreset = m.presets[m.presetCursor]
 				m.view = DownloadView
 				if m.infoOut != nil {
-					return m, startDownload(m.infoOut, m.selectedPreset)
+					return m, tea.Batch(startDownload(m), waitForDownloadLog(m.downloadLogChannel))
 				}
 			}
 		}
@@ -190,11 +234,21 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	if m.quitting {
-		return "\nGoodbye!\n"
-	}
-
 	var s string
+
+	if m.quitting {
+		s += "\n"
+		s += defaultStyle.Render("Downloaded")
+		s += "\n"
+		s += accentColorStyle.Render(getTitle(m.infoOut))
+		// s += "\n\n"
+		// s += defaultStyle.Render("To destination")
+		// s += "\n"
+		// s += accentColorStyle.Render("todo")
+		s += "\n"
+
+		return s
+	}
 
 	if m.view == QuerySelect {
 		s += defaultStyle.Render("enter either a ")
@@ -231,7 +285,9 @@ func (m model) View() string {
 		s += defaultStyle.Render("Selected preset: ")
 		s += boldStyle.Render(m.selectedPreset)
 		s += "\n\n"
-		s += defaultStyle.Render("this is download page")
+		s += defaultStyle.Render("Download logs:")
+		s += "\n"
+		s += strings.Join(m.downloadLogs, "\n")
 		s += "\n"
 	}
 

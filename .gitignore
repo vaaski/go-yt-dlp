@@ -4,3 +4,4 @@ go-yt-dlp
 yt-dlp
 .DS_Store
 dist
+*.log
