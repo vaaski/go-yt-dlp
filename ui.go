@@ -1,12 +1,6 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
-	"log"
-	"os"
-	"os/exec"
-	"runtime"
 	"strings"
 
 	"github.com/buger/jsonparser"
@@ -49,65 +43,6 @@ type model struct {
 	presets        []string
 }
 
-type infoMsg []byte
-
-func fetchInfo(url string) tea.Cmd {
-	return func() tea.Msg {
-		infoArgs := append(DEFAULT_ARGS[:], "-J")
-
-		if !validateUrl(url) {
-			url = "https://youtube.com/search?q=" + url
-			infoArgs = append(infoArgs, "-I", "1")
-		}
-
-		infoArgs = append(infoArgs, url)
-
-		infoCmd := exec.Command(ytDlpPath, infoArgs...)
-		infoOut, infoErr := infoCmd.Output()
-		maybePanic(infoErr)
-
-		//? if it's a playlist (like when you search for a song), just use the first entry
-		firstEntry, _, _, entryErr := jsonparser.Get(infoOut, "entries", "[0]")
-		if firstEntry != nil && entryErr == nil {
-			infoOut = firstEntry
-		}
-
-		return infoMsg(infoOut)
-	}
-}
-
-type downloadFinishMsg bool
-
-func startDownload(m model) tea.Cmd {
-	return func() tea.Msg {
-		downloadArgs := append(DEFAULT_ARGS[:], PRESET_MAP[m.selectedPreset]...)
-		downloadArgs = append(downloadArgs, "-P", downloadPath)
-
-		cpuCount := runtime.NumCPU()
-		downloadArgs = append(downloadArgs, "-N", fmt.Sprint(cpuCount))
-		downloadArgs = append(downloadArgs, "--load-info-json", "-")
-
-		downloadCmd := exec.Command(ytDlpPath, downloadArgs...)
-		downloadCmd.Stdin = strings.NewReader(string(m.infoOut))
-		stdout, downloadErr := downloadCmd.StdoutPipe()
-		maybePanic(downloadErr)
-
-		downloadErr = downloadCmd.Start()
-		maybePanic(downloadErr)
-
-		scanner := bufio.NewScanner(stdout)
-		for scanner.Scan() {
-			m.downloadLogChannel <- scanner.Text()
-		}
-		close(m.downloadLogChannel)
-
-		downloadErr = downloadCmd.Wait()
-		maybePanic(downloadErr)
-
-		return downloadFinishMsg(true)
-	}
-}
-
 type downloadLogMsg string
 
 func waitForDownloadLog(downloadChannel chan string) tea.Cmd {
@@ -145,7 +80,7 @@ func initialModel() model {
 }
 
 func (m model) Init() tea.Cmd {
-	return textinput.Blink
+	return tea.Batch(textinput.Blink, setDownloadPath, setExecutablePath)
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -169,14 +104,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case downloadLogMsg:
 		if strings.TrimSpace(string(msg)) != "" {
-			f, logErr := tea.LogToFile("debug.log", "download")
-			if logErr != nil {
-				fmt.Println("fatal:", logErr)
-				os.Exit(1)
-			}
-			defer f.Close()
-
-			log.Println(msg, fmt.Sprint(m.downloadDone))
 			m.downloadLogs = append(m.downloadLogs, string(msg))
 		}
 
@@ -185,8 +112,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case downloadFinishMsg:
-		m.downloadLogs = append(m.downloadLogs, accentColorStyle.Render("Download finished."))
 		m.downloadDone = true
+		m.downloadLogs = append(m.downloadLogs, accentColorStyle.Render("Download finished."))
 	}
 
 	if m.view == QuerySelect {
@@ -241,15 +168,21 @@ func (m model) View() string {
 	var s string
 
 	if m.quitting {
-		s += "\n"
-		s += defaultStyle.Render("Downloaded")
-		s += "\n"
-		s += accentColorStyle.Render(getTitle(m.infoOut))
-		// s += "\n\n"
-		// s += defaultStyle.Render("To destination")
-		// s += "\n"
-		// s += accentColorStyle.Render("todo")
-		s += "\n"
+		if m.downloadDone {
+			s += "\n"
+			s += defaultStyle.Render("Downloaded")
+			s += "\n"
+			s += accentColorStyle.Render(getTitle(m.infoOut))
+			// s += "\n\n"
+			// s += defaultStyle.Render("To destination")
+			// s += "\n"
+			// s += accentColorStyle.Render("todo")
+			s += "\n"
+		} else {
+			s += "\n"
+			s += defaultStyle.Render("Nothing downloaded.")
+			s += "\n"
+		}
 
 		return s
 	}
