@@ -159,12 +159,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.quitting = true
 			return m, tea.Quit
 		}
+
 	case infoMsg:
 		m.infoOut = msg
 		m.title = getTitle(msg)
 		if m.selectedPreset != "" && m.view == DownloadView {
 			return m, tea.Batch(startDownload(m), waitForDownloadLog(m.downloadLogChannel))
 		}
+
 	case downloadLogMsg:
 		if strings.TrimSpace(string(msg)) != "" {
 			f, logErr := tea.LogToFile("debug.log", "download")
@@ -181,7 +183,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if !m.downloadDone {
 			return m, waitForDownloadLog(m.downloadLogChannel)
 		}
+
 	case downloadFinishMsg:
+		m.downloadLogs = append(m.downloadLogs, accentColorStyle.Render("Download finished."))
 		m.downloadDone = true
 	}
 
