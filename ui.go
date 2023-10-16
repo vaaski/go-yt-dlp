@@ -7,9 +7,6 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 )
 
 type View string
@@ -39,7 +36,7 @@ type model struct {
 	downloadDone       bool
 
 	presetCursor   int
-	selectedPreset string
+	selectedPreset int
 	presets        []string
 }
 
@@ -61,9 +58,10 @@ func getTitle(infoOut []byte) string {
 }
 
 func initialModel() model {
-	presets := maps.Keys(PRESET_MAP)
-	slices.Sort(presets)
-	slices.Reverse(presets)
+	presets := []string{}
+	for _, preset := range PRESET_MAP {
+		presets = append(presets, preset[0])
+	}
 
 	ti := textinput.New()
 	ti.Placeholder = getClipboardUrl()
@@ -76,6 +74,7 @@ func initialModel() model {
 		presets:            presets,
 		textInput:          ti,
 		downloadLogChannel: make(chan string),
+		selectedPreset:     -1,
 	}
 }
 
@@ -98,7 +97,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case infoMsg:
 		m.infoOut = msg
 		m.title = getTitle(msg)
-		if m.selectedPreset != "" && m.view == DownloadView {
+		if m.selectedPreset >= 0 && m.view == DownloadView {
 			return m, tea.Batch(startDownload(m), waitForDownloadLog(m.downloadLogChannel))
 		}
 
@@ -152,7 +151,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 
 			case " ", "enter":
-				m.selectedPreset = m.presets[m.presetCursor]
+				m.selectedPreset = m.presetCursor
 				m.view = DownloadView
 				if m.infoOut != nil {
 					return m, tea.Batch(startDownload(m), waitForDownloadLog(m.downloadLogChannel))
@@ -219,8 +218,10 @@ func (m model) View() string {
 	}
 
 	if m.view == DownloadView {
+		preset := PRESET_MAP[m.selectedPreset][0]
+
 		s += defaultStyle.Render("Selected preset: ")
-		s += boldStyle.Render(m.selectedPreset)
+		s += boldStyle.Render(preset)
 		s += "\n\n"
 		s += defaultStyle.Render("Download logs:")
 		s += "\n"

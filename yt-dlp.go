@@ -16,10 +16,10 @@ import (
 var ytDlpPath string = "yt-dlp"
 var downloadPath string = "ytdl-download"
 var DEFAULT_ARGS = [...]string{"--force-keyframes-at-cuts", "--embed-metadata", "--no-playlist", "--console-title"}
-var PRESET_MAP = map[string][]string{
-	"mp4":      {"--remux-video", "mp4"},
-	"mp4-fast": {"-f", "b"},
-	"mp3":      {"-x", "--audio-format", "mp3", "-o", "%(uploader)s - %(title)s.%(ext)s"},
+var PRESET_MAP = [][]string{
+	{"mp4-fast", "-f", "b"},
+	{"mp4", "--remux-video", "mp4"},
+	{"mp3", "-x", "--audio-format", "mp3", "-o", "%(uploader)s - %(title)s.%(ext)s"},
 }
 
 func setDownloadPath() tea.Msg {
@@ -79,7 +79,7 @@ type downloadFinishMsg bool
 
 func startDownload(m model) tea.Cmd {
 	return func() tea.Msg {
-		downloadArgs := append(DEFAULT_ARGS[:], PRESET_MAP[m.selectedPreset]...)
+		downloadArgs := append(DEFAULT_ARGS[:], PRESET_MAP[m.selectedPreset][1:]...)
 		downloadArgs = append(downloadArgs, "-P", downloadPath)
 
 		cpuCount := runtime.NumCPU()
