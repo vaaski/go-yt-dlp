@@ -123,10 +123,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyMsg:
 			switch msg.String() {
 			case "M":
-				if m.textInput.Value() == "" {
-					musicToggled = true
-					m.musicSearch = !m.musicSearch
-				}
+				musicToggled = true
+				m.musicSearch = !m.musicSearch
 
 			case "enter":
 				m.downloadQuery = m.textInput.Value()

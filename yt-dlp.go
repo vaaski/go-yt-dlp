@@ -24,6 +24,7 @@ var (
 		{"mp4-fast", "-f", "b"},
 		{"mp4", "--remux-video", "mp4"},
 		{"mp3", "-x", "--audio-format", "mp3", "-o", "%(uploader)s - %(title)s.%(ext)s"},
+		{"wav", "-x", "--audio-format", "wav"},
 	}
 )
 
