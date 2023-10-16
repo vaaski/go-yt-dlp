@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"net/url"
 	"os"
+	"os/exec"
+	"runtime"
 
 	"golang.design/x/clipboard"
 )
@@ -39,4 +42,15 @@ func fileExists(filename string) bool {
 		return false
 	}
 	return !info.IsDir()
+}
+
+func setTermTitle(title string) {
+	if runtime.GOOS == "windows" {
+		cmd := exec.Command("cmd", "/C", "title", title)
+		if err := cmd.Run(); err != nil {
+			fmt.Println(err.Error())
+		}
+	} else {
+		print("\033]0;" + title + "\007")
+	}
 }

@@ -14,6 +14,8 @@ import (
 // todo add a progress bar for downloads
 // todo add a spinner for fetching info
 func main() {
+	setTermTitle("go-yt-dlp")
+
 	_, teaErr := tea.NewProgram(initialModel()).Run()
 	if teaErr != nil {
 		fmt.Printf("Could not start program :(\n%v\n", teaErr)
