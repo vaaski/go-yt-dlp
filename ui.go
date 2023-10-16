@@ -144,6 +144,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if !musicToggled {
 			m.textInput, cmd = m.textInput.Update(msg)
 		}
+
 	} else if m.view == PresetSelect {
 		switch msg := msg.(type) {
 		case tea.KeyMsg:
@@ -152,11 +153,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "up", "k":
 				if m.presetCursor > 0 {
 					m.presetCursor--
+				} else {
+					m.presetCursor = len(m.presets) - 1
 				}
 
 			case "down", "j":
 				if m.presetCursor < len(m.presets)-1 {
 					m.presetCursor++
+				} else {
+					m.presetCursor = 0
 				}
 
 			case " ", "enter":
