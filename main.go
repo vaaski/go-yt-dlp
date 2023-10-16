@@ -7,8 +7,10 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-// todo music search
 // todo record ascii cinema for readme
+// todo download binaries automatically
+// todo add a progress bar for downloads
+// todo add a spinner for fetching info
 func main() {
 	_, teaErr := tea.NewProgram(initialModel()).Run()
 	if teaErr != nil {

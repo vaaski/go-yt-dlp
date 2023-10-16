@@ -13,14 +13,19 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-var ytDlpPath string = "yt-dlp"
-var downloadPath string = "ytdl-download"
-var DEFAULT_ARGS = [...]string{"--force-keyframes-at-cuts", "--embed-metadata", "--no-playlist", "--console-title"}
-var PRESET_MAP = [][]string{
-	{"mp4-fast", "-f", "b"},
-	{"mp4", "--remux-video", "mp4"},
-	{"mp3", "-x", "--audio-format", "mp3", "-o", "%(uploader)s - %(title)s.%(ext)s"},
-}
+var (
+	ytDlpPath             string = "yt-dlp"
+	downloadPath          string = "ytdl-download"
+	youtubeSearchUrl             = "https://youtube.com/search?q="
+	youtubeMusicSearchUrl        = "https://music.youtube.com/search?q="
+
+	DEFAULT_ARGS = [...]string{"--force-keyframes-at-cuts", "--embed-metadata", "--no-playlist", "--console-title"}
+	PRESET_MAP   = [][]string{
+		{"mp4-fast", "-f", "b"},
+		{"mp4", "--remux-video", "mp4"},
+		{"mp3", "-x", "--audio-format", "mp3", "-o", "%(uploader)s - %(title)s.%(ext)s"},
+	}
+)
 
 func setDownloadPath() tea.Msg {
 	executablePath, _ := os.Executable()
@@ -41,7 +46,6 @@ func setExecutablePath() tea.Msg {
 	if fileExists("./yt-dlp") {
 		ytDlpPath = "./yt-dlp"
 	} else if fileExists("./yt-dlp.exe") {
-		// todo test on windows
 		ytDlpPath = "./yt-dlp.exe"
 	}
 
@@ -50,16 +54,20 @@ func setExecutablePath() tea.Msg {
 
 type infoMsg []byte
 
-func fetchInfo(url string) tea.Cmd {
+func fetchInfo(m model) tea.Cmd {
 	return func() tea.Msg {
 		infoArgs := append(DEFAULT_ARGS[:], "-J")
 
-		if !validateUrl(url) {
-			url = "https://youtube.com/search?q=" + url
+		if !validateUrl(m.downloadQuery) {
+			if m.musicSearch {
+				m.downloadQuery = youtubeMusicSearchUrl + m.downloadQuery
+			} else {
+				m.downloadQuery = youtubeSearchUrl + m.downloadQuery
+			}
 			infoArgs = append(infoArgs, "-I", "1")
 		}
 
-		infoArgs = append(infoArgs, url)
+		infoArgs = append(infoArgs, m.downloadQuery)
 
 		infoCmd := exec.Command(ytDlpPath, infoArgs...)
 		infoOut, infoErr := infoCmd.Output()

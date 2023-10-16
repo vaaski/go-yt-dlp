@@ -28,6 +28,7 @@ type model struct {
 	textInput     textinput.Model
 	title         string
 	downloadQuery string
+	musicSearch   bool
 	quitting      bool
 
 	infoOut            []byte
@@ -116,9 +117,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	if m.view == QuerySelect {
+		musicToggled := false
+
 		switch msg := msg.(type) {
 		case tea.KeyMsg:
 			switch msg.String() {
+			case "M":
+				if m.textInput.Value() == "" {
+					musicToggled = true
+					m.musicSearch = !m.musicSearch
+				}
+
 			case "enter":
 				m.downloadQuery = m.textInput.Value()
 				if m.downloadQuery == "" {
@@ -129,12 +138,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.textInput.Blur()
 					m.view = PresetSelect
 					m.title = m.downloadQuery
-					return m, fetchInfo(m.downloadQuery)
+					return m, fetchInfo(m)
 				}
 			}
 		}
 
-		m.textInput, cmd = m.textInput.Update(msg)
+		if !musicToggled {
+			m.textInput, cmd = m.textInput.Update(msg)
+		}
 	} else if m.view == PresetSelect {
 		switch msg := msg.(type) {
 		case tea.KeyMsg:
@@ -187,10 +198,16 @@ func (m model) View() string {
 	}
 
 	if m.view == QuerySelect {
-		s += defaultStyle.Render("enter either a ")
+		s += defaultStyle.Render("Enter either a ")
 		s += boldStyle.Render("url")
 		s += defaultStyle.Render(" or something to ")
 		s += boldStyle.Render("search on youtube")
+
+		if m.musicSearch {
+			s += "\n"
+			s += defaultStyle.Render("(music search enabled)")
+		}
+
 		s += "\n\n"
 
 		s += m.textInput.View()
