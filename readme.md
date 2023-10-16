@@ -13,7 +13,7 @@
 It provides a simple interface to download videos from YouTube and a
 [few other sites][othersites].
 
-## SYNOPSIS
+## USAGE
 
 Either double-click the binary or launch it in the command line.
 It will ask you to either paste a link or enter a search term.
