@@ -1,3 +1,5 @@
+//go:generate go-winres make
+
 package main
 
 import (

@@ -5,3 +5,4 @@ yt-dlp
 .DS_Store
 dist
 *.log
+*.syso
