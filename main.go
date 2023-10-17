@@ -15,6 +15,8 @@ import (
 // todo add a spinner for fetching info
 func main() {
 	setTermTitle("go-yt-dlp")
+	ensureYTDLP()
+	return
 
 	_, teaErr := tea.NewProgram(initialModel()).Run()
 	if teaErr != nil {

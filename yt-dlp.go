@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"os"
 	"os/exec"
 	"path"
 	"runtime"
@@ -14,7 +13,6 @@ import (
 )
 
 var (
-	ytDlpPath             string = "yt-dlp"
 	downloadPath          string = "ytdl-download"
 	youtubeSearchUrl             = "https://youtube.com/search?q="
 	youtubeMusicSearchUrl        = "https://music.youtube.com/search?q="
@@ -29,16 +27,8 @@ var (
 )
 
 func setDownloadPath() tea.Msg {
-	executablePath, _ := os.Executable()
-	executableFolder := path.Join(executablePath, "..")
-	if strings.HasPrefix(executableFolder, "/var/folders") {
-		// the path for the executable is in some temp folder when using `go run .`
-		// so we use the current working directory instead
-		cwd, _ := os.Getwd()
-		downloadPath = path.Join(cwd, downloadPath)
-	} else {
-		downloadPath = path.Join(executableFolder, downloadPath)
-	}
+	currentFolder := getCurrentFolder()
+	downloadPath = path.Join(currentFolder, downloadPath)
 
 	return nil
 }

@@ -5,7 +5,9 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"path"
 	"runtime"
+	"strings"
 
 	"golang.design/x/clipboard"
 )
@@ -52,5 +54,20 @@ func setTermTitle(title string) {
 		}
 	} else {
 		print("\033]0;" + title + "\007")
+	}
+}
+
+// gets the "current" folder, next to the go-yt-dlp binary
+// falls back to cwd during development
+func getCurrentFolder() string {
+	executablePath, _ := os.Executable()
+	executableFolder := path.Join(executablePath, "..")
+	if strings.HasPrefix(executableFolder, "/var/folders") {
+		// the path for the executable is in some temp folder when using `go run .`
+		// so we use the current working directory instead
+		cwd, _ := os.Getwd()
+		return cwd
+	} else {
+		return executableFolder
 	}
 }
