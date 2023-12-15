@@ -113,7 +113,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case downloadFinishMsg:
 		m.downloadDone = true
-		m.downloadLogs = append(m.downloadLogs, accentColorStyle.Render("Download finished."))
 	}
 
 	if m.view == QuerySelect {
@@ -258,11 +257,23 @@ func (m model) View() string {
 		s += "\n"
 		s += strings.Join(m.downloadLogs, "\n")
 		s += "\n"
+
+		if m.downloadDone {
+			s += accentColorStyle.Render("Download finished.")
+			s += "\n"
+		}
+
 	}
 
 	s += "\n"
-	s += defaultStyle.Render("Press escape to quit.")
-	s += "\n"
+
+	if m.downloadDone {
+		s += defaultStyle.Render("Press enter to reset, escape to quit.")
+		s += "\n"
+	} else {
+		s += defaultStyle.Render("Press escape to quit.")
+		s += "\n"
+	}
 
 	return s
 }

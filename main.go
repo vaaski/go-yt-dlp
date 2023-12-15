@@ -1,4 +1,5 @@
 //go:generate go-winres make
+//go:generate goreleaser --clean --snapshot
 
 package main
 
