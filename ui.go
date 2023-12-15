@@ -172,6 +172,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		}
+
+	} else if m.view == DownloadView {
+		switch msg := msg.(type) {
+		case tea.KeyMsg:
+			switch msg.String() {
+			case " ", "enter":
+				m = initialModel()
+			}
+		}
 	}
 
 	return m, cmd
@@ -194,6 +203,8 @@ func (m model) View() string {
 		} else {
 			s += "\n"
 			s += defaultStyle.Render("Nothing downloaded.")
+			s += "\n"
+			s += defaultStyle.Render("Todo: put summary here if there was actually stuff downloaded")
 			s += "\n"
 		}
 

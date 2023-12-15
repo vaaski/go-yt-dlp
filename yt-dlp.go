@@ -60,12 +60,13 @@ func fetchInfo(m model) tea.Cmd {
 		infoArgs := append(DEFAULT_ARGS[:], "-J")
 
 		if !validateUrl(m.downloadQuery) {
+			infoArgs = append(infoArgs, "-I", "1")
+
 			if m.musicSearch {
 				m.downloadQuery = youtubeMusicSearchUrl + m.downloadQuery
 			} else {
 				m.downloadQuery = youtubeSearchUrl + m.downloadQuery
 			}
-			infoArgs = append(infoArgs, "-I", "1")
 		}
 
 		infoArgs = append(infoArgs, m.downloadQuery)
