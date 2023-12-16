@@ -37,25 +37,13 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: go-yt-dlp darwin arm64
-          path: dist/go-yt-dlp_darwin_arm64/go-yt-dlp
-
-      - name: Upload darwin arm64 app bundle
-        uses: actions/upload-artifact@v3
-        with:
-          name: go-yt-dlp darwin arm64
-          path: dist/go-yt-dlp_darwin_arm64/go-yt-dlp.app
+          path: dist/go-yt-dlp_darwin_arm64/*
 
       - name: Upload darwin amd64
         uses: actions/upload-artifact@v3
         with:
           name: go-yt-dlp darwin amd64
-          path: dist/go-yt-dlp_darwin_amd64_v1/go-yt-dlp
-
-      - name: Upload darwin amd64 app bundle
-        uses: actions/upload-artifact@v3
-        with:
-          name: go-yt-dlp darwin amd64
-          path: dist/go-yt-dlp_darwin_amd64_v1/go-yt-dlp.app
+          path: dist/go-yt-dlp_darwin_amd64_v1/*
 
       - name: Upload windows amd64
         uses: actions/upload-artifact@v3
