@@ -1,6 +1,7 @@
 ytdl-download
 ./*.json
 go-yt-dlp*
+!go-yt-dlp.icns
 yt-dlp
 .DS_Store
 dist
