@@ -21,6 +21,8 @@ var (
 	accentColorStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff0000")).Bold(true)
 	boldStyle        = lipgloss.NewStyle().Bold(true)
 	defaultStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color("#9f9f9f"))
+
+	downloadedList = []string{}
 )
 
 type model struct {
@@ -112,6 +114,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case downloadFinishMsg:
+		downloadedList = append(downloadedList, m.title)
 		m.downloadDone = true
 	}
 
@@ -189,21 +192,18 @@ func (m model) View() string {
 	var s string
 
 	if m.quitting {
-		if m.downloadDone {
-			s += "\n"
+		s += "\n"
+
+		if len(downloadedList) > 0 {
 			s += defaultStyle.Render("Downloaded")
 			s += "\n"
-			s += accentColorStyle.Render(getTitle(m.infoOut))
-			// s += "\n\n"
-			// s += defaultStyle.Render("To destination")
-			// s += "\n"
-			// s += accentColorStyle.Render("todo")
-			s += "\n"
+
+			for _, title := range downloadedList {
+				s += accentColorStyle.Render(title)
+				s += "\n"
+			}
 		} else {
-			s += "\n"
 			s += defaultStyle.Render("Nothing downloaded.")
-			s += "\n"
-			s += defaultStyle.Render("Todo: put summary here if there was actually stuff downloaded")
 			s += "\n"
 		}
 
