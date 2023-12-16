@@ -28,6 +28,7 @@ require (
 	github.com/charmbracelet/bubbles v0.16.1
 	github.com/containerd/console v1.0.4-0.20230313162750-1ae8d489ac81 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
+	github.com/otiai10/copy v1.14.0
 	github.com/rivo/uniseg v0.4.4 // indirect
 	golang.design/x/clipboard v0.7.0
 	golang.org/x/sys v0.12.0 // indirect
