@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/buger/jsonparser"
@@ -35,6 +36,7 @@ type model struct {
 
 	infoOut            []byte
 	downloadLogs       []string
+	downloadProgress   float64
 	downloadLogChannel chan string
 	downloadDone       bool
 
@@ -74,10 +76,10 @@ func initialModel() model {
 
 	return model{
 		view:               QuerySelect,
-		presets:            presets,
 		textInput:          ti,
 		downloadLogChannel: make(chan string),
 		selectedPreset:     -1,
+		presets:            presets,
 	}
 }
 
@@ -105,8 +107,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case downloadLogMsg:
-		if strings.TrimSpace(string(msg)) != "" {
-			m.downloadLogs = append(m.downloadLogs, string(msg))
+		stringified := strings.TrimSpace(string(msg))
+
+		if stringified != "" {
+			if strings.HasPrefix(stringified, PROGRESS_PREFIX) {
+				m.downloadProgress = parseProgressOutput(stringified)
+			} else {
+				m.downloadLogs = append(m.downloadLogs, stringified)
+			}
 		}
 
 		if !m.downloadDone {
@@ -253,10 +261,17 @@ func (m model) View() string {
 		s += defaultStyle.Render("Selected preset: ")
 		s += boldStyle.Render(preset)
 		s += "\n\n"
+
 		s += defaultStyle.Render("Download logs:")
 		s += "\n"
 		s += strings.Join(m.downloadLogs, "\n")
 		s += "\n"
+
+		if m.downloadProgress >= 0 && !m.downloadDone {
+			s += accentColorStyle.Render("Progress: ")
+			s += boldStyle.Render(fmt.Sprintf("%.2f%%", m.downloadProgress*100))
+			s += "\n"
+		}
 
 		if m.downloadDone {
 			s += accentColorStyle.Render("Download finished.")

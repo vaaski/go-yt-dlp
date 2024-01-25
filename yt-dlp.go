@@ -14,13 +14,15 @@ import (
 )
 
 var (
-	ytDlpPath             string = "yt-dlp"
-	downloadPath          string = "ytdl-download"
-	youtubeSearchUrl             = "https://youtube.com/search?q="
-	youtubeMusicSearchUrl        = "https://music.youtube.com/search?q="
+	ytDlpPath             = "yt-dlp"
+	downloadPath          = "ytdl-download"
+	youtubeSearchUrl      = "https://youtube.com/search?q="
+	youtubeMusicSearchUrl = "https://music.youtube.com/search?q="
 
-	DEFAULT_ARGS = [...]string{"--force-keyframes-at-cuts", "--embed-metadata", "--no-playlist", "--console-title"}
-	PRESET_MAP   = [][]string{
+	PROGRESS_PREFIX = "[[DL]]"
+	DEFAULT_ARGS    = []string{"--force-keyframes-at-cuts", "--embed-metadata", "--no-playlist"}
+	PROGRESS_ARGS   = []string{"--progress-template", PROGRESS_PREFIX + "%(progress)j", "--console-title"}
+	PRESET_MAP      = [][]string{
 		{"mp4-fast", "-f", "b"},
 		{"mp4", "--remux-video", "mp4"},
 		{"mp3", "-x", "--audio-format", "mp3", "-o", "%(uploader)s - %(title)s.%(ext)s"},
@@ -94,6 +96,7 @@ func startDownload(m model) tea.Cmd {
 
 		cpuCount := runtime.NumCPU()
 		downloadArgs = append(downloadArgs, "-N", fmt.Sprint(cpuCount))
+		downloadArgs = append(downloadArgs, PROGRESS_ARGS...)
 		downloadArgs = append(downloadArgs, "--load-info-json", "-")
 
 		downloadCmd := exec.Command(ytDlpPath, downloadArgs...)
@@ -105,13 +108,16 @@ func startDownload(m model) tea.Cmd {
 		maybePanic(downloadErr)
 
 		scanner := bufio.NewScanner(stdout)
+		scanner.Split(ScanLinesCR)
+
 		for scanner.Scan() {
 			m.downloadLogChannel <- scanner.Text()
 		}
-		close(m.downloadLogChannel)
 
 		downloadErr = downloadCmd.Wait()
 		maybePanic(downloadErr)
+
+		close(m.downloadLogChannel)
 
 		return downloadFinishMsg(true)
 	}
