@@ -1,4 +1,4 @@
-package main
+package src
 
 import (
 	"bytes"
@@ -46,7 +46,7 @@ func fileExists(filename string) bool {
 	return !info.IsDir()
 }
 
-func setTermTitle(title string) {
+func SetTermTitle(title string) {
 	if runtime.GOOS == "windows" {
 		cmd := exec.Command("cmd", "/C", "title", title)
 		if err := cmd.Run(); err != nil {
@@ -84,7 +84,7 @@ func dropCR(data []byte) []byte {
 
 // required to parse the output of yt-dlp --progress-template
 // because it uses \r instead of \n for newlines
-func ScanLinesCR(data []byte, atEOF bool) (advance int, token []byte, err error) {
+func scanLinesCR(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	if atEOF && len(data) == 0 {
 		return 0, nil, nil
 	}

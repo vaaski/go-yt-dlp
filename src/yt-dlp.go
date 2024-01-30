@@ -1,4 +1,4 @@
-package main
+package src
 
 import (
 	"bufio"
@@ -108,7 +108,7 @@ func startDownload(m model) tea.Cmd {
 		maybePanic(downloadErr)
 
 		scanner := bufio.NewScanner(stdout)
-		scanner.Split(ScanLinesCR)
+		scanner.Split(scanLinesCR)
 
 		for scanner.Scan() {
 			m.downloadLogChannel <- scanner.Text()
