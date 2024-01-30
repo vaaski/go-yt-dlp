@@ -18,6 +18,8 @@ var (
 	downloadPath          = "ytdl-download"
 	youtubeSearchUrl      = "https://youtube.com/search?q="
 	youtubeMusicSearchUrl = "https://music.youtube.com/search?q="
+	// https://github.com/yt-dlp/yt-dlp/issues/6007#issuecomment-1769137538
+	youtubeMusicSearchPostfix = "#songs"
 
 	PROGRESS_PREFIX = "[[DL]]"
 	CUSTOM_PRESET   = "custom"
@@ -67,7 +69,7 @@ func fetchInfo(m model) tea.Cmd {
 			infoArgs = append(infoArgs, "-I", "1")
 
 			if m.musicSearch {
-				m.downloadQuery = youtubeMusicSearchUrl + m.downloadQuery
+				m.downloadQuery = youtubeMusicSearchUrl + m.downloadQuery + youtubeMusicSearchPostfix
 			} else {
 				m.downloadQuery = youtubeSearchUrl + m.downloadQuery
 			}
