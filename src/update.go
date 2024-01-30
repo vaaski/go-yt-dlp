@@ -56,13 +56,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.musicSearch = !m.musicSearch
 
 			case "enter":
-				m.downloadQuery = m.textInput.Value()
+				m.downloadQuery = m.queryInput.Value()
 				if m.downloadQuery == "" {
-					m.downloadQuery = m.textInput.Placeholder
+					m.downloadQuery = m.queryInput.Placeholder
 				}
 
 				if m.downloadQuery != "" {
-					m.textInput.Blur()
+					m.queryInput.Blur()
 					m.view = presetSelect
 					m.title = m.downloadQuery
 					return m, fetchInfo(m)
@@ -71,7 +71,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		if !musicToggled {
-			m.textInput, cmd = m.textInput.Update(msg)
+			m.queryInput, cmd = m.queryInput.Update(msg)
 		}
 
 	} else if m.view == presetSelect {
@@ -95,13 +95,40 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			case " ", "enter":
 				m.selectedPreset = m.presetCursor
-				m.view = downloadView
-				if m.infoOut != nil {
-					return m, tea.Batch(startDownload(m), waitForDownloadLog(m.downloadLogChannel))
+
+				if PRESET_MAP[m.selectedPreset][0] == CUSTOM_PRESET {
+					m.view = customPreset
+					m.customPresetInput.Focus()
+				} else {
+					m.view = downloadView
+					if m.infoOut != nil {
+						return m, tea.Batch(startDownload(m), waitForDownloadLog(m.downloadLogChannel))
+					}
 				}
 			}
 		}
 
+	} else if m.view == customPreset {
+		switch msg := msg.(type) {
+		case tea.KeyMsg:
+			switch msg.String() {
+
+			case "enter":
+				format := m.customPresetInput.Value()
+
+				if format != "" {
+					m.customPresetInput.Blur()
+					PRESET_MAP[m.selectedPreset] = append(PRESET_MAP[m.selectedPreset], format)
+
+					m.view = downloadView
+					if m.infoOut != nil {
+						return m, tea.Batch(startDownload(m), waitForDownloadLog(m.downloadLogChannel))
+					}
+				}
+			}
+		}
+
+		m.customPresetInput, cmd = m.customPresetInput.Update(msg)
 	} else if m.view == downloadView {
 		switch msg := msg.(type) {
 		case tea.KeyMsg:

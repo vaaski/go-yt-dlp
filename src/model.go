@@ -12,6 +12,7 @@ type viewMap string
 const (
 	querySelect  viewMap = "QuerySelect"
 	presetSelect viewMap = "PresetSelect"
+	customPreset viewMap = "CustomPreset"
 	downloadView viewMap = "DownloadView"
 )
 
@@ -25,7 +26,7 @@ var (
 
 type model struct {
 	view          viewMap
-	textInput     textinput.Model
+	queryInput    textinput.Model
 	title         string
 	downloadQuery string
 	musicSearch   bool
@@ -37,9 +38,10 @@ type model struct {
 	downloadLogChannel chan string
 	downloadDone       bool
 
-	presetCursor   int
-	selectedPreset int
-	presets        []string
+	presetCursor      int
+	selectedPreset    int
+	presets           []string
+	customPresetInput textinput.Model
 }
 
 type downloadLogMsg string
@@ -65,18 +67,19 @@ func InitialModel() model {
 		presets = append(presets, preset[0])
 	}
 
-	ti := textinput.New()
-	ti.Placeholder = getClipboardUrl()
-	ti.Focus()
-	ti.CharLimit = 0
-	ti.Width = 44 // length of a full youtube url
+	queryInput := textinput.New()
+	queryInput.Placeholder = getClipboardUrl()
+	queryInput.Focus()
+	queryInput.CharLimit = 0
+	queryInput.Width = 44 // length of a full youtube url
 
 	return model{
 		view:               querySelect,
-		textInput:          ti,
+		queryInput:         queryInput,
 		downloadLogChannel: make(chan string),
 		selectedPreset:     -1,
 		presets:            presets,
+		customPresetInput:  textinput.New(),
 	}
 }
 

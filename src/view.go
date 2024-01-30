@@ -40,7 +40,7 @@ func (m model) View() string {
 
 		s += "\n\n"
 
-		s += m.textInput.View()
+		s += m.queryInput.View()
 		s += "\n"
 	}
 
@@ -62,6 +62,16 @@ func (m model) View() string {
 			}
 			s += "\n"
 		}
+	}
+
+	if m.view == customPreset {
+		s += boldStyle.Render("Enter a custom preset:")
+		s += "\n"
+		s += defaultStyle.Render("(see https://github.com/yt-dlp/yt-dlp#format-selection)")
+		s += "\n\n"
+
+		s += m.customPresetInput.View()
+		s += "\n"
 	}
 
 	if m.view == downloadView {

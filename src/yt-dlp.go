@@ -20,6 +20,7 @@ var (
 	youtubeMusicSearchUrl = "https://music.youtube.com/search?q="
 
 	PROGRESS_PREFIX = "[[DL]]"
+	CUSTOM_PRESET   = "custom"
 	DEFAULT_ARGS    = []string{"--force-keyframes-at-cuts", "--embed-metadata", "--no-playlist"}
 	PROGRESS_ARGS   = []string{"--progress-template", PROGRESS_PREFIX + "%(progress)j", "--console-title"}
 	PRESET_MAP      = [][]string{
@@ -27,6 +28,7 @@ var (
 		{"mp4", "--remux-video", "mp4"},
 		{"mp3", "-x", "--audio-format", "mp3", "-o", "%(uploader)s - %(title)s.%(ext)s"},
 		{"wav", "-x", "--audio-format", "wav"},
+		{CUSTOM_PRESET, "-f"},
 	}
 )
 
