@@ -10,8 +10,8 @@
 <br />
 
 > go-yt-dlp is a small wrapper around the excellent [yt-dlp project][yt-dlp].
-It provides a simple interface to download videos from YouTube and a
-[few other sites][othersites].
+> It provides a simple interface to download videos from YouTube and a
+> [few other sites][othersites].
 
 ## USAGE
 
@@ -36,13 +36,21 @@ because those are the platforms I tested on.
 At the moment you'll also need to [download yt-dlp yourself][yt-dlp-download] and either put it
 in your $PATH or adjacent to the go-yt-dlp binary.
 
-## BUILDING
+## RUNNING FROM SOURCE
 
-To build the project yourself, just install go and
+To run the project from source, just install go and
 execute the following commands:
 
 - `go mod tidy`
 - `go run .`
+
+## BUILD FROM SOURCE
+
+- Install go 1.21 or higher
+- [Install goreleaser](https://goreleaser.com/install/#go-install)
+- [Install go-winres](https://github.com/tc-hib/go-winres#installation)
+- Clone this repo
+- Run `go generate`
 
 [yt-dlp]: https://github.com/yt-dlp/yt-dlp
 [othersites]: https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md
