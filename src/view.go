@@ -1,7 +1,6 @@
 package src
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -84,21 +83,20 @@ func (m model) View() string {
 		s += boldStyle.Render(preset)
 		s += "\n\n"
 
-		s += defaultStyle.Render("Download logs:")
-		s += "\n"
-		s += strings.Join(m.downloadLogs, "\n")
-		s += "\n"
-
-		if m.downloadProgress >= 0 && !m.downloadDone {
-			s += accentColorStyle.Render("Progress: ")
-			s += boldStyle.Render(fmt.Sprintf("%.2f%%", m.downloadProgress*100))
-			s += "\n"
+		if m.downloadProgress > 0 && !m.downloadDone {
+			s += m.progressBar.View()
+			s += "\n\n"
 		}
 
 		if m.downloadDone {
 			s += accentColorStyle.Render("Download finished.")
-			s += "\n"
+			s += "\n\n"
 		}
+
+		s += defaultStyle.Render("Download logs:")
+		s += "\n"
+		s += strings.Join(m.downloadLogs, "\n")
+		s += "\n"
 
 	}
 

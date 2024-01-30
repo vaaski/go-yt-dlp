@@ -15,7 +15,6 @@ import (
 
 // todo record ascii cinema for readme
 // todo download binaries automatically
-// todo add a progress bar for downloads
 // todo add a spinner for fetching info
 func main() {
 	f, err := tea.LogToFile("debug.log", "debug")

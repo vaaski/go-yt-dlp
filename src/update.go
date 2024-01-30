@@ -3,6 +3,7 @@ package src
 import (
 	"strings"
 
+	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -10,6 +11,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.progressBar.Width = msg.Width - 4
+		return m, nil
+
 	case tea.KeyMsg:
 		switch msg.String() {
 
@@ -27,18 +32,25 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case downloadLogMsg:
 		stringified := strings.TrimSpace(string(msg))
+		var progressUpdate tea.Cmd
 
 		if stringified != "" {
 			if strings.HasPrefix(stringified, PROGRESS_PREFIX) {
 				m.downloadProgress = parseProgressOutput(stringified)
+				progressUpdate = m.progressBar.SetPercent(m.downloadProgress)
 			} else {
 				m.downloadLogs = append(m.downloadLogs, stringified)
 			}
 		}
 
 		if !m.downloadDone {
-			return m, waitForDownloadLog(m.downloadLogChannel)
+			return m, tea.Batch(waitForDownloadLog(m.downloadLogChannel), progressUpdate)
 		}
+
+	case progress.FrameMsg:
+		progressModel, cmd := m.progressBar.Update(msg)
+		m.progressBar = progressModel.(progress.Model)
+		return m, cmd
 
 	case downloadFinishMsg:
 		downloadedList = append(downloadedList, m.title)
@@ -133,7 +145,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyMsg:
 			switch msg.String() {
 			case " ", "enter":
+				lastProgressWidth := m.progressBar.Width
+
 				m = InitialModel()
+				m.progressBar.Width = lastProgressWidth
 			}
 		}
 	}

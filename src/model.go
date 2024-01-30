@@ -2,7 +2,9 @@ package src
 
 import (
 	"github.com/buger/jsonparser"
+	"github.com/charmbracelet/bubbles/progress"
 	"github.com/charmbracelet/bubbles/textinput"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -37,6 +39,7 @@ type model struct {
 	downloadProgress   float64
 	downloadLogChannel chan string
 	downloadDone       bool
+	progressBar        progress.Model
 
 	presetCursor      int
 	selectedPreset    int
@@ -77,6 +80,7 @@ func InitialModel() model {
 		view:               querySelect,
 		queryInput:         queryInput,
 		downloadLogChannel: make(chan string),
+		progressBar:        progress.New(progress.WithGradient("#0a0a0a", "#ff0000")),
 		selectedPreset:     -1,
 		presets:            presets,
 		customPresetInput:  textinput.New(),
