@@ -50,12 +50,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		switch msg := msg.(type) {
 		case tea.KeyMsg:
-			switch msg.String() {
-			case "M":
-				musicToggled = true
-				m.musicSearch = !m.musicSearch
-
-			case "enter":
+			switch msg.Type {
+			case tea.KeyEnter:
 				m.downloadQuery = m.queryInput.Value()
 				if m.downloadQuery == "" {
 					m.downloadQuery = m.queryInput.Placeholder
@@ -67,6 +63,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.title = m.downloadQuery
 					return m, fetchInfo(m)
 				}
+			case tea.KeyTab:
+				musicToggled = true
+				m.musicSearch = !m.musicSearch
 			}
 		}
 

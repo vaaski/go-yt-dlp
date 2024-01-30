@@ -18,6 +18,13 @@ import (
 // todo add a progress bar for downloads
 // todo add a spinner for fetching info
 func main() {
+	f, err := tea.LogToFile("debug.log", "debug")
+	if err != nil {
+		fmt.Println("fatal:", err)
+		os.Exit(1)
+	}
+	defer f.Close()
+
 	src.SetTermTitle("go-yt-dlp")
 
 	_, teaErr := tea.NewProgram(src.InitialModel()).Run()
