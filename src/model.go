@@ -79,7 +79,7 @@ func InitialModel() model {
 	queryInput.Width = 44 // length of a full youtube url
 
 	infoFetchSpinner := spinner.New()
-	infoFetchSpinner.Spinner = spinner.Line
+	infoFetchSpinner.Spinner = spinner.Spinner(layerSpinner)
 
 	return model{
 		view:               querySelect,

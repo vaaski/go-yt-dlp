@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"time"
 
 	"github.com/buger/jsonparser"
 	"golang.design/x/clipboard"
@@ -102,4 +103,18 @@ func scanLinesCR(data []byte, atEOF bool) (advance int, token []byte, err error)
 	}
 	// Request more data.
 	return 0, nil, nil
+}
+
+type Spinner struct {
+	Frames []string
+	FPS    time.Duration
+}
+
+var layerSpinner = Spinner{
+	Frames: []string{
+		"-",
+		"=",
+		"≡",
+	},
+	FPS: time.Second / 6,
 }
