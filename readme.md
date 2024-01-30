@@ -19,7 +19,10 @@ Either double-click the binary or launch it in the command line.
 It will ask you to either paste a link or enter a search term.
 If you enter a search term, it will search YouTube for the term and
 download the first result. If you happen to have a URL in your clipboard,
-it will automatically paste it for you.
+it will automatically pre-fill it for you.
+
+At the query prompt, you can also press <kbd>Shift</kbd>+<kbd>M</kbd> to
+limit your search to YouTube Music.
 
 This isn't very fancy, but rather an exercise for me to learn go.
 
