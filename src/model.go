@@ -3,6 +3,7 @@ package src
 import (
 	"github.com/buger/jsonparser"
 	"github.com/charmbracelet/bubbles/progress"
+	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textinput"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -35,6 +36,7 @@ type model struct {
 	quitting      bool
 
 	infoOut            []byte
+	infoFetchSpinner   spinner.Model
 	downloadLogs       []string
 	downloadProgress   float64
 	downloadLogChannel chan string
@@ -76,6 +78,9 @@ func InitialModel() model {
 	queryInput.CharLimit = 0
 	queryInput.Width = 44 // length of a full youtube url
 
+	infoFetchSpinner := spinner.New()
+	infoFetchSpinner.Spinner = spinner.Line
+
 	return model{
 		view:               querySelect,
 		queryInput:         queryInput,
@@ -84,6 +89,7 @@ func InitialModel() model {
 		selectedPreset:     -1,
 		presets:            presets,
 		customPresetInput:  textinput.New(),
+		infoFetchSpinner:   infoFetchSpinner,
 	}
 }
 

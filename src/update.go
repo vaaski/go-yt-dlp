@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/bubbles/progress"
+	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -52,6 +53,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.progressBar = progressModel.(progress.Model)
 		return m, cmd
 
+	case spinner.TickMsg:
+		if m.infoOut == nil {
+			var cmd tea.Cmd
+			m.infoFetchSpinner, cmd = m.infoFetchSpinner.Update(msg)
+			return m, cmd
+		}
+
 	case downloadFinishMsg:
 		downloadedList = append(downloadedList, m.title)
 		m.downloadDone = true
@@ -73,7 +81,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.queryInput.Blur()
 					m.view = presetSelect
 					m.title = m.downloadQuery
-					return m, fetchInfo(m)
+					return m, tea.Batch(fetchInfo(m), m.infoFetchSpinner.Tick)
 				}
 			case tea.KeyTab:
 				musicToggled = true

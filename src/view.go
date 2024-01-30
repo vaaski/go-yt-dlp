@@ -47,7 +47,14 @@ func (m model) View() string {
 	}
 
 	if m.view == presetSelect || m.view == downloadView {
-		s += defaultStyle.Render("Downloading: ")
+		if m.infoOut == nil {
+			s += m.infoFetchSpinner.View()
+			s += " "
+			s += defaultStyle.Render("Resolving: ")
+		} else {
+			s += defaultStyle.Render("Downloading: ")
+		}
+
 		s += boldStyle.Render(m.title)
 		s += "\n"
 	}
