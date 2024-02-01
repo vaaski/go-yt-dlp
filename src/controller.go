@@ -63,6 +63,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case downloadFinishMsg:
 		downloadedList = append(downloadedList, m.title)
 		m.downloadDone = true
+		SetTermTitle("go-yt-dlp")
 	}
 
 	if m.view == querySelect {
