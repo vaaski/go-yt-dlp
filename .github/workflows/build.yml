@@ -1,6 +1,9 @@
 name: build
 
-on: [push]
+on:
+  push:
+    tags:
+      - "*"
 
 jobs:
   goreleaser:
@@ -36,8 +39,8 @@ jobs:
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "dist/go-yt-dlp_darwin_arm64/*,dist/go-yt-dlp_darwin_amd64_v1/*,dist/go-yt-dlp_windows_amd64_v1/go-yt-dlp.exe"
-          draft: true
+          - artifacts: "dist/go-yt-dlp_darwin_arm64/*,dist/go-yt-dlp_darwin_amd64_v1/*,dist/go-yt-dlp_windows_amd64_v1/go-yt-dlp.exe"
+          - draft: true
 
       - name: Upload darwin arm64
         uses: actions/upload-artifact@v3
