@@ -1,9 +1,6 @@
 name: build
 
-on:
-  push:
-    tags:
-      - "*"
+on: [push]
 
 jobs:
   goreleaser:
@@ -42,6 +39,8 @@ jobs:
           - artifacts: "dist/go-yt-dlp_darwin_arm64/*,dist/go-yt-dlp_darwin_amd64_v1/*,dist/go-yt-dlp_windows_amd64_v1/go-yt-dlp.exe"
           - draft: true
           - name: draft
+          - omitBody: true
+          - tag: v0.0.0-2
 
       - name: Upload darwin arm64
         uses: actions/upload-artifact@v3
