@@ -1,6 +1,7 @@
 package src
 
 import (
+	"fmt"
 	"net/http"
 	"runtime"
 
@@ -20,5 +21,7 @@ func AutoUpdate() error {
 	if err != nil {
 		panic(err)
 	}
+
+	fmt.Println("Successfully updated to latest version")
 	return err
 }

@@ -32,7 +32,7 @@ func (m model) View() string {
 			s += boldStyle.Render("search on ")
 			s += accentColorStyle.Render("YouTube Music")
 		} else {
-			s += defaultStyle.Render("Enter either a ")
+			s += defaultStyle.Render("TEST Enter either a ")
 			s += boldStyle.Render("URL")
 			s += defaultStyle.Render(" or something to ")
 			s += boldStyle.Render("search on ")
