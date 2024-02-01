@@ -12,6 +12,10 @@ func AutoUpdate() error {
 	baseUrl := "https://github.com/vaaski/go-yt-dlp/releases/latest/download/go-yt-dlp-"
 	downloadUrl := baseUrl + runtime.GOOS + "-" + runtime.GOARCH
 
+	if runtime.GOOS == "windows" {
+		downloadUrl += ".exe"
+	}
+
 	resp, err := http.Get(downloadUrl)
 	if err != nil {
 		return err
