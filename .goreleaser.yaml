@@ -1,5 +1,4 @@
 builds:
-
   - goos:
       # - linux
       - windows
@@ -13,3 +12,8 @@ builds:
 
 archives:
   - format: binary
+    name_template: "go-yt-dlp-{{ .Os }}-{{ .Arch }}"
+
+release:
+  draft: true
+  replace_existing_draft: true
