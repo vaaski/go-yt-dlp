@@ -24,6 +24,9 @@ func main() {
 	// }
 	// defer f.Close()
 
+	src.InstallYTDLP()
+	src.InstallFFMPEG()
+
 	updateFlag := flag.Bool("U", false, "Pass -U to auto-update")
 	flag.Parse()
 
