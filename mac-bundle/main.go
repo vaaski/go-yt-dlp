@@ -30,8 +30,13 @@ func main() {
 	for _, currentArch := range darwinArchFolders {
 		fmt.Println("creating bundle for", currentArch)
 
+		currentContents, err := os.ReadDir(path.Join(DIST_FOLDER, currentArch))
+		if err != nil {
+			panic(err)
+		}
+
 		appFolder := path.Join(DIST_FOLDER, currentArch, "go-yt-dlp.app")
-		currentExecutable := path.Join(DIST_FOLDER, currentArch, "go-yt-dlp")
+		currentExecutable := path.Join(DIST_FOLDER, currentArch, currentContents[0].Name())
 
 		cp.Copy("./mac-bundle/Contents", path.Join(appFolder, "Contents"))
 		cp.Copy(currentExecutable, path.Join(appFolder, "Contents/MacOS/go-yt-dlp"))
