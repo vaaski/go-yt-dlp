@@ -5,6 +5,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
@@ -16,12 +17,20 @@ import (
 // todo record ascii cinema for readme
 // todo download binaries automatically
 func main() {
-	f, err := tea.LogToFile("debug.log", "debug")
-	if err != nil {
-		fmt.Println("fatal:", err)
-		os.Exit(1)
+	// f, err := tea.LogToFile("debug.log", "debug")
+	// if err != nil {
+	// 	fmt.Println("fatal:", err)
+	// 	os.Exit(1)
+	// }
+	// defer f.Close()
+
+	updateFlag := flag.Bool("U", false, "Pass -U to auto-update")
+	flag.Parse()
+
+	if *updateFlag {
+		src.AutoUpdate()
+		os.Exit(0)
 	}
-	defer f.Close()
 
 	src.SetTermTitle("go-yt-dlp")
 
