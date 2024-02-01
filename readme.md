@@ -34,9 +34,7 @@ Currently, there are only binaries for macOS and Windows,
 because those are the platforms I tested on. It should
 probably run on other platforms as well.
 
-- [macOS arm64][macOS arm64]
-- [macOS amd64][macOS amd64]
-- [windows amd64][windows amd64]
+- [Download the latest release here](https://github.com/vaaski/go-yt-dlp/releases/latest)
 
 At the moment you'll also need to [download yt-dlp yourself][yt-dlp installation]
 and either put it in your $PATH or adjacent to the go-yt-dlp binary.
@@ -60,6 +58,3 @@ execute the following commands:
 [yt-dlp]: https://github.com/yt-dlp/yt-dlp
 [supportedsites]: https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md
 [yt-dlp installation]: https://github.com/yt-dlp/yt-dlp#installation
-[macOS arm64]: https://nightly.link/vaaski/go-yt-dlp/workflows/build/main/go-yt-dlp%20darwin%20arm64.zip
-[macOS amd64]: https://nightly.link/vaaski/go-yt-dlp/workflows/build/main/go-yt-dlp%20darwin%20amd64.zip
-[windows amd64]: https://nightly.link/vaaski/go-yt-dlp/workflows/build/main/go-yt-dlp%20windows%20amd64.zip
