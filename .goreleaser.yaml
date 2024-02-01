@@ -8,6 +8,8 @@ builds:
       - amd64
       - arm64
     binary: "go-yt-dlp-{{ .Os }}-{{ .Arch }}"
+    env:
+      - CGO_ENABLED=1
 
 archives:
   - format: binary
