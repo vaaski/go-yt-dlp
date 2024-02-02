@@ -3,6 +3,7 @@ module github.com/vaaski/go-yt-dlp
 go 1.21.1
 
 require (
+	github.com/bodgit/sevenzip v1.4.5
 	github.com/buger/jsonparser v1.1.1
 	github.com/charmbracelet/bubbletea v0.25.0
 	github.com/charmbracelet/lipgloss v0.9.1
@@ -15,7 +16,6 @@ require (
 	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/bodgit/plumbing v1.3.0 // indirect
-	github.com/bodgit/sevenzip v1.4.5 // indirect
 	github.com/bodgit/windows v1.0.1 // indirect
 	github.com/charmbracelet/harmonica v0.2.0 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
