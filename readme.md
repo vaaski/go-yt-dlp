@@ -36,8 +36,27 @@ probably run on other platforms as well.
 
 - [Download the latest release here](https://github.com/vaaski/go-yt-dlp/releases/latest)
 
-At the moment you'll also need to [download yt-dlp yourself][yt-dlp installation]
-and either put it in your $PATH or adjacent to the go-yt-dlp binary.
+### Dependencies
+
+In order to function, go-yt-dlp needs [`yt-dlp`][yt-dlp], [`ffmpeg`][ffmpeg] and [`ffprobe`][ffmpeg] to be installed on your system.
+
+Automatic installation is natively supported on Windows.
+
+On other platforms it'll use [homebrew][brew] to install.
+If you don't have [homebrew][brew] I strongly recommend you install it.
+
+If you wish to install them manually or have already installed them beforehand, here's how go-yt-dlp will look for them:
+
+- Check `$PATH` or `%PATH%`
+- Check for `yt-dlp`, `ffmpeg` and `ffprobe` adjacent to go-yt-dlp
+- Check in `.go-yt-dlp/bin` in your home directory
+- If none of the above is found, it will install them automatically
+
+## UPDATING
+
+To update go-yt-dlp, simply run `go-yt-dlp -U` to replace the binary with the latest release.
+
+This will also run `yt-dlp -U` for you, updating the yt-dlp binary.
 
 ## RUNNING FROM SOURCE
 
@@ -56,5 +75,7 @@ execute the following commands:
 - Run `go generate`
 
 [yt-dlp]: https://github.com/yt-dlp/yt-dlp
+[ffmpeg]: https://ffmpeg.org
+[brew]: https://brew.sh
 [supportedsites]: https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md
 [yt-dlp installation]: https://github.com/yt-dlp/yt-dlp#installation
