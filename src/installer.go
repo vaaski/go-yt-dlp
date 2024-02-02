@@ -51,7 +51,7 @@ func InstallYTDLP() {
 		return
 	}
 
-	panic("yt-dlp is not available and cannot be installed")
+	panic("yt-dlp is not available and cannot be automatically installed on this platform")
 }
 
 func InstallFFMPEG() {
@@ -95,5 +95,5 @@ func InstallFFMPEG() {
 		return
 	}
 
-	panic("ffmpeg is not available and cannot be installed")
+	panic("ffmpeg is not available and cannot be automatically installed on this platform")
 }

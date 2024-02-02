@@ -39,8 +39,22 @@ func AutoUpdate() {
 }
 
 func updateYTDLP() {
-	if !commandExists("yt-dlp") {
+	if !executableExists("yt-dlp") {
 		InstallYTDLP()
+		return
+	}
+
+	if runtime.GOOS == "windows" {
+		path, err := findExecutable("yt-dlp")
+		maybePanic(err)
+
+		fmt.Println("Updating yt-dlp for Windows...")
+		child := exec.Command(path, "-U")
+		child.Stdout = os.Stdout
+		child.Stderr = os.Stderr
+
+		err = child.Run()
+		maybePanic(err)
 		return
 	}
 
@@ -50,12 +64,17 @@ func updateYTDLP() {
 		child.Stdout = os.Stdout
 		child.Stderr = os.Stderr
 
-		child.Run()
+		err := child.Run()
+		maybePanic(err)
+
+		return
 	}
+
+	fmt.Println("cannot update yt-dlp on this platform")
 }
 
 func updateFFMPEG() {
-	if !commandExists("ffmpeg") {
+	if !executableExists("ffmpeg") {
 		InstallFFMPEG()
 		return
 	}
@@ -66,6 +85,11 @@ func updateFFMPEG() {
 		child.Stdout = os.Stdout
 		child.Stderr = os.Stderr
 
-		child.Run()
+		err := child.Run()
+		maybePanic(err)
+
+		return
 	}
+
+	fmt.Println("cannot update ffmpeg on this platform")
 }
