@@ -11,13 +11,17 @@ import (
 
 const DIST_FOLDER = "./dist"
 
+func maybePanic(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func main() {
 	fmt.Println("creating mac bundle(s)...")
 
 	distContents, err := os.ReadDir(DIST_FOLDER)
-	if err != nil {
-		panic(err)
-	}
+	maybePanic(err)
 
 	darwinArchFolders := []string{}
 
@@ -31,9 +35,7 @@ func main() {
 		fmt.Println("creating bundle for", currentArch)
 
 		currentContents, err := os.ReadDir(filepath.Join(DIST_FOLDER, currentArch))
-		if err != nil {
-			panic(err)
-		}
+		maybePanic(err)
 
 		appFolder := filepath.Join(DIST_FOLDER, currentArch, "go-yt-dlp.app")
 		currentExecutable := filepath.Join(DIST_FOLDER, currentArch, currentContents[0].Name())

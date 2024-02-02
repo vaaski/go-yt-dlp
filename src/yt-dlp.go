@@ -51,9 +51,7 @@ func setDownloadPath() tea.Msg {
 
 func setExecutablePath() tea.Msg {
 	path, err := findExecutable("yt-dlp")
-	if err != nil {
-		panic(err)
-	}
+	maybePanic(err)
 
 	ytDlpPath = path
 	return nil

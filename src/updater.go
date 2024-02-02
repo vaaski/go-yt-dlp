@@ -24,14 +24,10 @@ func AutoUpdate() {
 	}
 
 	resp, err := http.Get(downloadUrl)
-	if err != nil {
-		panic(err)
-	}
+	maybePanic(err)
 	defer resp.Body.Close()
 	err = selfupdate.Apply(resp.Body, selfupdate.Options{})
-	if err != nil {
-		panic(err)
-	}
+	maybePanic(err)
 
 	fmt.Println("Successfully updated go-yt-dlp to latest version")
 	updateYTDLP()

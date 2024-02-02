@@ -29,9 +29,7 @@ func InstallYTDLP() {
 
 		outputFile := filepath.Join(binDir, "yt-dlp.exe")
 		err := downloadFile(windowsYTDLPUrl, outputFile)
-		if err != nil {
-			panic(err)
-		}
+		maybePanic(err)
 
 		fmt.Println("yt-dlp installed successfully to", outputFile)
 		return
@@ -44,9 +42,7 @@ func InstallYTDLP() {
 		child.Stderr = os.Stderr
 
 		err := child.Run()
-		if err != nil {
-			panic(err)
-		}
+		maybePanic(err)
 
 		return
 	}
@@ -88,9 +84,7 @@ func InstallFFMPEG() {
 		child.Stderr = os.Stderr
 
 		err := child.Run()
-		if err != nil {
-			panic(err)
-		}
+		maybePanic(err)
 
 		return
 	}
