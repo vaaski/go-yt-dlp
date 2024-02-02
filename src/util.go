@@ -12,6 +12,7 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/bodgit/sevenzip"
 	"github.com/buger/jsonparser"
 	"golang.design/x/clipboard"
 )
@@ -103,6 +104,41 @@ func findExecutable(name string) (string, error) {
 func executableExists(name string) bool {
 	_, err := findExecutable(name)
 	return err == nil
+}
+
+type Files map[string]string
+
+func extractArchive(archive string, files Files) error {
+	r, err := sevenzip.OpenReader(archive)
+	maybePanic(err)
+	defer r.Close()
+
+	for _, file := range r.File {
+		filename := filepath.Base(file.Name)
+		outPath, isWanted := files[filename]
+
+		if isWanted {
+			err = extractFile(file, outPath)
+			maybePanic(err)
+		}
+	}
+
+	return nil
+}
+
+func extractFile(file *sevenzip.File, outPath string) error {
+	rc, err := file.Open()
+	maybePanic(err)
+	defer rc.Close()
+
+	out, err := os.Create(outPath)
+	maybePanic(err)
+	defer out.Close()
+
+	_, err = io.Copy(out, rc)
+	maybePanic(err)
+
+	return nil
 }
 
 func SetTermTitle(title string) {

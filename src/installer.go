@@ -10,7 +10,7 @@ import (
 
 const (
 	windowsYTDLPUrl  = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe"
-	windowsYTDLPFile = "yt-dlp.exe"
+	windowsFFMPEGUrl = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z"
 )
 
 var (
@@ -27,7 +27,7 @@ func InstallYTDLP() {
 	if runtime.GOOS == "windows" {
 		fmt.Println("Installing yt-dlp for Windows...")
 
-		outputFile := filepath.Join(binDir, windowsYTDLPFile)
+		outputFile := filepath.Join(binDir, "yt-dlp.exe")
 		err := downloadFile(windowsYTDLPUrl, outputFile)
 		if err != nil {
 			panic(err)
@@ -55,7 +55,29 @@ func InstallYTDLP() {
 }
 
 func InstallFFMPEG() {
-	if commandExists("ffmpeg") {
+	if executableExists("ffmpeg") {
+		return
+	}
+
+	if runtime.GOOS == "windows" {
+		fmt.Println("Installing ffmpeg for Windows...")
+
+		zipFile := filepath.Join(binDir, "ffmpeg.7z")
+		if !fileExists(zipFile) {
+			err := downloadFile(windowsFFMPEGUrl, zipFile)
+			maybePanic(err)
+		}
+
+		err := extractArchive(zipFile, Files{
+			"ffmpeg.exe":  filepath.Join(binDir, "ffmpeg.exe"),
+			"ffprobe.exe": filepath.Join(binDir, "ffprobe.exe"),
+		})
+		maybePanic(err)
+
+		err = os.Remove(zipFile)
+		maybePanic(err)
+
+		fmt.Println("ffmpeg & ffprobe installed successfully to", binDir)
 		return
 	}
 
