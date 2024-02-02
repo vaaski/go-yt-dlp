@@ -3,9 +3,12 @@ package src
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"time"
 
@@ -22,6 +25,25 @@ func maybePanic(err error) {
 func validateUrl(inputUrl string) bool {
 	parsed, err := url.ParseRequestURI(inputUrl)
 	return err == nil && parsed.Scheme != "" && parsed.Host != ""
+}
+
+func downloadFile(url string, filename string) error {
+	response, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+
+	os.MkdirAll(filepath.Dir(filename), os.ModePerm)
+
+	out, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, response.Body)
+	return err
 }
 
 func getClipboardUrl() string {
@@ -45,6 +67,42 @@ func fileExists(filename string) bool {
 		return false
 	}
 	return !info.IsDir()
+}
+
+func findExecutable(name string) (string, error) {
+	globalPath, err := exec.LookPath(name)
+	if err == nil {
+		return globalPath, nil
+	}
+
+	currentExecutable, err := os.Executable()
+	if err != nil {
+		return "", err
+	}
+
+	executablePath := filepath.Dir(currentExecutable)
+
+	adjacent := filepath.Join(executablePath)
+	adjacentExe := filepath.Join(executablePath + ".exe")
+	inBin := filepath.Join(binDir, name)
+	inBinExe := filepath.Join(binDir, name+".exe")
+
+	if fileExists(adjacent) {
+		return adjacent, nil
+	} else if fileExists(adjacentExe) {
+		return adjacentExe, nil
+	} else if fileExists(inBin) {
+		return inBin, nil
+	} else if fileExists(inBinExe) {
+		return inBinExe, nil
+	}
+
+	return "", fmt.Errorf("could not find %s", name)
+}
+
+func executableExists(name string) bool {
+	_, err := findExecutable(name)
+	return err == nil
 }
 
 func SetTermTitle(title string) {

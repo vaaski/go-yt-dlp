@@ -50,12 +50,12 @@ func setDownloadPath() tea.Msg {
 }
 
 func setExecutablePath() tea.Msg {
-	if fileExists("./yt-dlp") {
-		ytDlpPath = "./yt-dlp"
-	} else if fileExists("./yt-dlp.exe") {
-		ytDlpPath = "./yt-dlp.exe"
+	path, err := findExecutable("yt-dlp")
+	if err != nil {
+		panic(err)
 	}
 
+	ytDlpPath = path
 	return nil
 }
 

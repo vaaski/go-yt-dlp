@@ -38,21 +38,6 @@ func AutoUpdate() {
 	updateFFMPEG()
 }
 
-func InstallYTDLP() {
-	if commandExists("yt-dlp") {
-		return
-	}
-
-	if commandExists("brew") {
-		fmt.Println("Installing yt-dlp with brew...")
-		child := exec.Command("brew", "install", "yt-dlp")
-		child.Stdout = os.Stdout
-		child.Stderr = os.Stderr
-
-		child.Run()
-	}
-}
-
 func updateYTDLP() {
 	if !commandExists("yt-dlp") {
 		InstallYTDLP()
@@ -62,21 +47,6 @@ func updateYTDLP() {
 	if commandExists("brew") {
 		fmt.Println("Updating yt-dlp with brew...")
 		child := exec.Command("brew", "upgrade", "yt-dlp")
-		child.Stdout = os.Stdout
-		child.Stderr = os.Stderr
-
-		child.Run()
-	}
-}
-
-func InstallFFMPEG() {
-	if commandExists("ffmpeg") {
-		return
-	}
-
-	if commandExists("brew") {
-		fmt.Println("Installing ffmpeg with brew...")
-		child := exec.Command("brew", "install", "ffmpeg")
 		child.Stdout = os.Stdout
 		child.Stderr = os.Stderr
 
