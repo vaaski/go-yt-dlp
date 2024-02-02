@@ -8,7 +8,12 @@ builds:
       - arm64
     binary: "go-yt-dlp-{{ .Os }}-{{ .Arch }}"
     env:
-      - CGO_ENABLED=1
+      - CGO_ENABLED=0
+    overrides:
+      - goos: darwin
+        goarch: arm64
+        env:
+          - CGO_ENABLED=1
 
 archives:
   - format: binary
