@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"path"
+	"path/filepath"
 	"strings"
 
 	cp "github.com/otiai10/copy"
@@ -30,16 +30,16 @@ func main() {
 	for _, currentArch := range darwinArchFolders {
 		fmt.Println("creating bundle for", currentArch)
 
-		currentContents, err := os.ReadDir(path.Join(DIST_FOLDER, currentArch))
+		currentContents, err := os.ReadDir(filepath.Join(DIST_FOLDER, currentArch))
 		if err != nil {
 			panic(err)
 		}
 
-		appFolder := path.Join(DIST_FOLDER, currentArch, "go-yt-dlp.app")
-		currentExecutable := path.Join(DIST_FOLDER, currentArch, currentContents[0].Name())
+		appFolder := filepath.Join(DIST_FOLDER, currentArch, "go-yt-dlp.app")
+		currentExecutable := filepath.Join(DIST_FOLDER, currentArch, currentContents[0].Name())
 
-		cp.Copy("./mac-bundle/Contents", path.Join(appFolder, "Contents"))
-		cp.Copy(currentExecutable, path.Join(appFolder, "Contents/MacOS/go-yt-dlp"))
+		cp.Copy("./mac-bundle/Contents", filepath.Join(appFolder, "Contents"))
+		cp.Copy(currentExecutable, filepath.Join(appFolder, "Contents/MacOS/go-yt-dlp"))
 	}
 
 }

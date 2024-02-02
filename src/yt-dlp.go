@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path"
+	"path/filepath"
 	"runtime"
 	"strings"
 
@@ -36,14 +36,14 @@ var (
 
 func setDownloadPath() tea.Msg {
 	executablePath, _ := os.Executable()
-	executableFolder := path.Join(executablePath, "..")
+	executableFolder := filepath.Join(executablePath, "..")
 	if strings.HasPrefix(executableFolder, "/var/folders") {
 		// the path for the executable is in some temp folder when using `go run .`
 		// so we use the current working directory instead
 		cwd, _ := os.Getwd()
-		downloadPath = path.Join(cwd, downloadPath)
+		downloadPath = filepath.Join(cwd, downloadPath)
 	} else {
-		downloadPath = path.Join(executableFolder, downloadPath)
+		downloadPath = filepath.Join(executableFolder, downloadPath)
 	}
 
 	return nil
