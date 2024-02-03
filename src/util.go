@@ -30,17 +30,14 @@ func validateUrl(inputUrl string) bool {
 
 func downloadFile(url string, filename string) error {
 	response, err := http.Get(url)
-	if err != nil {
-		return err
-	}
+	maybePanic(err)
 	defer response.Body.Close()
 
-	os.MkdirAll(filepath.Dir(filename), os.ModePerm)
+	err = os.MkdirAll(filepath.Dir(filename), os.ModePerm)
+	maybePanic(err)
 
 	out, err := os.Create(filename)
-	if err != nil {
-		return err
-	}
+	maybePanic(err)
 	defer out.Close()
 
 	_, err = io.Copy(out, response.Body)
@@ -226,7 +223,11 @@ func OpenInWindowsTerminal() {
 	}
 
 	if runtime.GOOS == "windows" {
-		exec.Command(wtExecutable, []string{"nt", executable, "-wt"}...).Start()
+		err = exec.Command(wtExecutable, []string{"nt", executable, "-wt"}...).Start()
+		if err != nil {
+			return
+		}
+
 		os.Exit(0)
 	}
 }

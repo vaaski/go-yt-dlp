@@ -40,8 +40,10 @@ func main() {
 		appFolder := filepath.Join(DIST_FOLDER, currentArch, "go-yt-dlp.app")
 		currentExecutable := filepath.Join(DIST_FOLDER, currentArch, currentContents[0].Name())
 
-		cp.Copy("./mac-bundle/Contents", filepath.Join(appFolder, "Contents"))
-		cp.Copy(currentExecutable, filepath.Join(appFolder, "Contents/MacOS/go-yt-dlp"))
+		err = cp.Copy("./mac-bundle/Contents", filepath.Join(appFolder, "Contents"))
+		maybePanic(err)
+		err = cp.Copy(currentExecutable, filepath.Join(appFolder, "Contents/MacOS/go-yt-dlp"))
+		maybePanic(err)
 	}
 
 }
