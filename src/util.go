@@ -212,3 +212,21 @@ var layerSpinner = Spinner{
 	},
 	FPS: time.Second / 6,
 }
+
+// try to open in windows terminal if installed
+func OpenInWindowsTerminal() {
+	executable, err := os.Executable()
+	if err != nil {
+		return
+	}
+
+	wtExecutable, err := exec.LookPath("wt")
+	if err != nil {
+		return
+	}
+
+	if runtime.GOOS == "windows" {
+		exec.Command(wtExecutable, []string{"nt", executable, "-wt"}...).Start()
+		os.Exit(0)
+	}
+}
