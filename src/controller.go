@@ -67,33 +67,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	if m.view == querySelect {
-		musicToggled := false
-
-		switch msg := msg.(type) {
-		case tea.KeyMsg:
-			switch msg.Type {
-			case tea.KeyEnter:
-				m.downloadQuery = m.queryInput.Value()
-				if m.downloadQuery == "" {
-					m.downloadQuery = m.queryInput.Placeholder
-				}
-
-				if m.downloadQuery != "" {
-					m.queryInput.Blur()
-					m.view = presetSelect
-					m.title = m.downloadQuery
-					return m, tea.Batch(fetchInfo(m), m.infoFetchSpinner.Tick)
-				}
-			case tea.KeyTab:
-				musicToggled = true
-				m.musicSearch = !m.musicSearch
-			}
-		}
-
-		if !musicToggled {
-			m.queryInput, cmd = m.queryInput.Update(msg)
-		}
-
+		return queryController(&m, msg)
 	} else if m.view == presetSelect {
 		switch msg := msg.(type) {
 		case tea.KeyMsg:

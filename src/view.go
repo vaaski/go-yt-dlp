@@ -27,23 +27,7 @@ func (m model) View() string {
 	}
 
 	if m.view == querySelect {
-		if m.musicSearch {
-			s += defaultStyle.Render("Enter something to ")
-			s += boldStyle.Render("search on ")
-			s += accentColorStyle.Render("YouTube Music")
-		} else {
-			s += defaultStyle.Render("Enter either a ")
-			s += boldStyle.Render("URL")
-			s += defaultStyle.Render(" or something to ")
-			s += boldStyle.Render("search on ")
-			s += accentColorStyle.Render("YouTube")
-		}
-
-		s += "\n\n"
-
-		s += m.queryInput.View()
-		s += "\n\n"
-		s += defaultStyle.Render("Press Tab to toggle YouTube Music search.")
+		s += queryView(&m)
 	}
 
 	if m.view == presetSelect || m.view == downloadView {
