@@ -69,39 +69,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if m.view == querySelect {
 		return queryController(&m, msg)
 	} else if m.view == presetSelect {
-		switch msg := msg.(type) {
-		case tea.KeyMsg:
-			switch msg.String() {
-
-			case "up", "k":
-				if m.presetCursor > 0 {
-					m.presetCursor--
-				} else {
-					m.presetCursor = len(m.presets) - 1
-				}
-
-			case "down", "j":
-				if m.presetCursor < len(m.presets)-1 {
-					m.presetCursor++
-				} else {
-					m.presetCursor = 0
-				}
-
-			case " ", "enter":
-				m.selectedPreset = m.presetCursor
-
-				if PRESET_MAP[m.selectedPreset][0] == CUSTOM_PRESET {
-					m.view = customPreset
-					m.customPresetInput.Focus()
-				} else {
-					m.view = downloadView
-					if m.infoOut != nil {
-						return m, tea.Batch(startDownload(m), waitForDownloadLog(m.downloadLogChannel))
-					}
-				}
-			}
-		}
-
+		return presetController(&m, msg)
 	} else if m.view == customPreset {
 		switch msg := msg.(type) {
 		case tea.KeyMsg:

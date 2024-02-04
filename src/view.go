@@ -44,17 +44,7 @@ func (m model) View() string {
 	}
 
 	if m.view == presetSelect {
-		s += defaultStyle.Render("Pick a preset:")
-		s += "\n\n"
-
-		for i, preset := range m.presets {
-			if m.presetCursor == i {
-				s += "> " + accentColorStyle.Render((preset))
-			} else {
-				s += "  " + preset
-			}
-			s += "\n"
-		}
+		s += presetView(&m)
 	}
 
 	if m.view == customPreset {
