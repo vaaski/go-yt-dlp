@@ -23,9 +23,14 @@ func main() {
 	// }
 	// defer f.Close()
 
-	updateFlag := flag.Bool("U", false, "Pass -U to auto-update")
-	wtFlag := flag.Bool("wt", false, "Gets passed when auto-opening in Windows Terminal")
+	updateFlag := flag.Bool("U", false, "Run auto-update.")
+	wtFlag := flag.Bool("wt", false, "Do not try to open in Windows Terminal. Meant for internal use.")
 	flag.Parse()
+
+	if *updateFlag {
+		src.AutoUpdate()
+		os.Exit(0)
+	}
 
 	if !*wtFlag {
 		src.OpenInWindowsTerminal()
@@ -33,11 +38,6 @@ func main() {
 
 	src.InstallYTDLP()
 	src.InstallFFMPEG()
-
-	if *updateFlag {
-		src.AutoUpdate()
-		os.Exit(0)
-	}
 
 	src.SetTermTitle("go-yt-dlp")
 
