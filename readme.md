@@ -36,6 +36,12 @@ probably run on other platforms as well.
 
 - [Download the latest release here](https://github.com/vaaski/go-yt-dlp/releases/latest)
 
+If you have Go 1.17+ installed, you can also use go install:
+
+```sh
+go install github.com/vaaski/go-yt-dlp@latest
+```
+
 ### Dependencies
 
 In order to function, go-yt-dlp needs [`yt-dlp`][yt-dlp], [`ffmpeg`][ffmpeg] and [`ffprobe`][ffmpeg] to be installed on your system.
