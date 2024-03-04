@@ -40,6 +40,7 @@ func InstallYTDLP() {
 		child := exec.Command("brew", "install", "yt-dlp")
 		child.Stdout = os.Stdout
 		child.Stderr = os.Stderr
+		child.Env = append(child.Env, "HOMEBREW_NO_AUTO_UPDATE=1")
 
 		err := child.Run()
 		maybePanic(err)
@@ -82,6 +83,7 @@ func InstallFFMPEG() {
 		child := exec.Command("brew", "install", "ffmpeg")
 		child.Stdout = os.Stdout
 		child.Stderr = os.Stderr
+		child.Env = append(child.Env, "HOMEBREW_NO_AUTO_UPDATE=1")
 
 		err := child.Run()
 		maybePanic(err)

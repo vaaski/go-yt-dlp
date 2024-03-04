@@ -59,6 +59,7 @@ func updateYTDLP() {
 		child := exec.Command("brew", "upgrade", "yt-dlp")
 		child.Stdout = os.Stdout
 		child.Stderr = os.Stderr
+		child.Env = append(child.Env, "HOMEBREW_NO_AUTO_UPDATE=1")
 
 		err := child.Run()
 		maybePanic(err)
@@ -80,6 +81,7 @@ func updateFFMPEG() {
 		child := exec.Command("brew", "upgrade", "ffmpeg")
 		child.Stdout = os.Stdout
 		child.Stderr = os.Stderr
+		child.Env = append(child.Env, "HOMEBREW_NO_AUTO_UPDATE=1")
 
 		err := child.Run()
 		maybePanic(err)
