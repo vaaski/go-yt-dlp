@@ -14,7 +14,6 @@ import (
 
 	"github.com/bodgit/sevenzip"
 	"github.com/buger/jsonparser"
-	"golang.design/x/clipboard"
 )
 
 func maybePanic(err error) {
@@ -42,21 +41,6 @@ func downloadFile(url string, filename string) error {
 
 	_, err = io.Copy(out, response.Body)
 	return err
-}
-
-func getClipboardUrl() string {
-	err := clipboard.Init()
-	maybePanic(err)
-
-	text := clipboard.Read(clipboard.FmtText)
-	stringified := string(text)
-	validUrl := validateUrl(stringified)
-
-	if validUrl {
-		return stringified
-	} else {
-		return ""
-	}
 }
 
 func fileExists(filename string) bool {

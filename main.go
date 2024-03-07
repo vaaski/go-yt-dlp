@@ -9,9 +9,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/vaaski/go-yt-dlp/src"
-
 	tea "github.com/charmbracelet/bubbletea"
+
+	"github.com/vaaski/go-yt-dlp/src"
 )
 
 // todo record ascii cinema for readme

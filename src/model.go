@@ -8,6 +8,8 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+
+	"github.com/vaaski/go-yt-dlp/src/clipboard"
 )
 
 type viewMap string
@@ -73,7 +75,7 @@ func InitialModel() model {
 	}
 
 	queryInput := textinput.New()
-	queryInput.Placeholder = getClipboardUrl()
+	queryInput.Placeholder = clipboard.GetClipboardUrl()
 	queryInput.Focus()
 	queryInput.CharLimit = 0
 	queryInput.Width = 44 // length of a full youtube url
