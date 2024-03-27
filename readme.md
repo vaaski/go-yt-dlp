@@ -49,7 +49,7 @@ In order to function, go-yt-dlp needs [`yt-dlp`][yt-dlp], [`ffmpeg`][ffmpeg] and
 Automatic installation is natively supported on Windows.
 
 On other platforms it'll use [homebrew][brew] to install.
-If you don't have [homebrew][brew] I strongly recommend you install it.
+If you don't have [homebrew][brew] on MacOS I strongly recommend you install it.
 
 If you wish to install them manually or have already installed them beforehand, here's how go-yt-dlp will look for them:
 
